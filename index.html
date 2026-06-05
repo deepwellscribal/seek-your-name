@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seek Your Name · שורשם · Deep Well Scribal</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
@@ -210,21 +213,36 @@
   }
   .mode-btn {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.18rem;
     background: rgba(255, 253, 245, 0.5);
     border: none;
     border-right: 1px solid var(--rul);
     color: rgba(139, 110, 66, 0.7);
-    font-family: var(--F-head);
-    font-weight: 500;
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 0.62rem 0.4rem;
+    padding: 0.55rem 0.35rem;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
   }
   .mode-btn:last-child { border-right: none; }
   .mode-btn.active { background: var(--ink); color: var(--cre); }
+  .mode-btn .mode-he {
+    font-family: var(--F-heb);
+    font-size: 0.98rem;
+    line-height: 1.15;
+    direction: rtl;
+  }
+  .mode-btn .mode-en {
+    font-family: var(--F-head);
+    font-weight: 700;
+    font-size: 0.54rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.25;
+    opacity: 0.9;
+  }
   .mode-desc {
     font-size: 0.7rem;
     color: rgba(139, 110, 66, 0.7);
@@ -608,6 +626,22 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
+  /* Marker shown (when "Reveal exact name(s)" is on) on a verse that contains
+     the searched name verbatim. Filled so it stands out from the outline pills. */
+  .verse-card .exact-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    background: var(--sep);
+    color: var(--cre);
+    border-radius: 1px;
+    padding: 1px 7px;
+    font-size: 0.6rem;
+    font-family: var(--F-head);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .verse-card .exact-pill .he { font-family: var(--F-heb); font-weight: 400; font-size: 0.78rem; }
   .verse-card .sefaria-link {
     font-size: 0.6rem;
     color: rgba(139, 110, 66, 0.55);
@@ -777,17 +811,23 @@
 <div class="search-wrap">
   <div class="search-card">
     <div class="mode-toggle" id="modeToggle">
-      <button type="button" class="mode-btn active" data-mode="root">Shoresh · Root</button>
-      <button type="button" class="mode-btn" data-mode="rashei">Roshei Teivot</button>
-      <button type="button" class="mode-btn" data-mode="nameverse">First &amp; Last Letter</button>
+      <button type="button" class="mode-btn active" data-mode="root">
+        <span class="mode-he">שורש</span><span class="mode-en">Root</span>
+      </button>
+      <button type="button" class="mode-btn" data-mode="rashei">
+        <span class="mode-he">ראשי תבות</span><span class="mode-en">Acrostic</span>
+      </button>
+      <button type="button" class="mode-btn" data-mode="nameverse">
+        <span class="mode-he">ראשון ואחרון</span><span class="mode-en">First &amp; Last Letter</span>
+      </button>
     </div>
-    <p class="mode-desc" id="modeDesc"></p>
+    <p class="mode-desc" id="modeDesc">Find verses in Tanakh connected with your name(s).</p>
     <div class="label">Enter your Hebrew name(s)</div>
     <div id="fields"></div>
     <button class="add-btn" id="addBtn">+ Add another name</button>
     <div class="kb-toggle-row">
       <span class="lbl">Hebrew Keyboard</span>
-      <button id="kbToggle">hide</button>
+      <button id="kbToggle">conceal</button>
     </div>
     <div id="keyboard"></div>
     <div class="filters">
@@ -798,7 +838,11 @@
       </button>
       <button class="toggle root-only" id="filterExact" type="button">
         <span class="switch"><span class="knob"></span></span>
-        <span class="text">Hide verses containing the exact name</span>
+        <span class="text">Conceal verses containing the exact name</span>
+      </button>
+      <button class="toggle" id="filterExactReveal" type="button">
+        <span class="switch"><span class="knob"></span></span>
+        <span class="text">Reveal verses containing your exact name(s)</span>
       </button>
       <button class="toggle" id="filterTorah" type="button">
         <span class="switch"><span class="knob"></span></span>
@@ -1419,6 +1463,13 @@ function verseContainsExact(stripped_text, name) {
   return parts.some(p => words.includes(p));
 }
 
+// Which of the given name fields appear in the verse as the exact name (a whole
+// word). Used by the "Reveal verses containing your exact name(s)" option to
+// surface and float those verses to the top, across all search modes.
+function exactNamesInVerse(stripped_text, names) {
+  return names.filter(n => verseContainsExact(stripped_text, n));
+}
+
 // =============== Tanakh data ===============
 let TANAKH = null;
 // Forms the Tanakh uses ONLY as proper names (built at build time from
@@ -1530,6 +1581,7 @@ function doSearch(names, opts = {}) {
   if (!TANAKH) return [];
   const {
     filterExact = false,
+    filterExactReveal = false,
     filterTorahOnly = false,
     filterPsalmsOnly = false,
     filterStrict = true,  // strict morphological matching is now the DEFAULT
@@ -1598,6 +1650,7 @@ function doSearch(names, opts = {}) {
     if (matchedNames.length === 0) continue;
     if (filterExact && pairs.some(p => verseContainsExact(verse.s, p.stripped))) continue;
 
+    const exactNames = exactNamesInVerse(verse.s, names);
     results.push({
       ...verse,
       matchedNames,
@@ -1606,6 +1659,8 @@ function doSearch(names, opts = {}) {
       multi: names.length > 1,
       coverage,
       relevance,
+      exactNames,                          // name fields appearing verbatim
+      exactCount: exactNames.length,
       // True when the search terms appear as consecutive words in order — a
       // strong sign the verse is the actual phrase the name was taken from.
       phrase: phraseAdjacent(words, terms, lemmas),
@@ -1622,6 +1677,9 @@ function doSearch(names, opts = {}) {
   //   4. higher total match quality (exact/clean roots beat loose ones)
   //   5. canonical Tanakh order as a stable tie-breaker
   results.sort((a, b) => {
+    // When "reveal exact names" is on, verses containing the actual name(s) float
+    // to the very top (more names verbatim = higher).
+    if (filterExactReveal && a.exactCount !== b.exactCount) return b.exactCount - a.exactCount;
     if (a.phrase !== b.phrase) return a.phrase ? -1 : 1;
     if (a.allMatched !== b.allMatched) return a.allMatched ? -1 : 1;
     if (a.coverage !== b.coverage) return b.coverage - a.coverage;
@@ -1734,7 +1792,7 @@ const STATUS_RANK = { forward: 3, reverse: 2, other: 1 };
 
 function doRosheiTeivotSearch(names, opts = {}) {
   if (!TANAKH) return [];
-  const { filterTorahOnly = false, filterPsalmsOnly = false } = opts;
+  const { filterTorahOnly = false, filterPsalmsOnly = false, filterExactReveal = false } = opts;
   const targets = rosheiTargets(names);
   if (!targets.length) return [];
   const multi = targets.length > 1;
@@ -1759,6 +1817,7 @@ function doRosheiTeivotSearch(names, opts = {}) {
       : !multi ? "forward"
       : (contiguousAcrostic(initials, letterArrays) || {}).status || null;
     const nameFrac = words.filter(w => properNounForm(w) !== null).length / words.length;
+    const exactNames = exactNamesInVerse(verse.s, names);
     results.push({
       ...verse,
       matchedNames: matched,
@@ -1769,12 +1828,15 @@ function doRosheiTeivotSearch(names, opts = {}) {
       isPsalms: verse.b === "Psalms",
       nameBucket: Math.round(nameFrac * 4),
       coverage: matched.length,
+      exactNames,
+      exactCount: exactNames.length,
       sources: [],
     });
   }
   // Contiguous matches first (forward, then reverse, then any other order), then
   // by how many parts matched, then Psalms, fewer proper names, shorter, canon.
   results.sort((a, b) => {
+    if (filterExactReveal && a.exactCount !== b.exactCount) return b.exactCount - a.exactCount;
     const sr = (STATUS_RANK[b.status] || 0) - (STATUS_RANK[a.status] || 0);
     if (sr) return sr;
     if (a.coverage !== b.coverage) return b.coverage - a.coverage;
@@ -1828,7 +1890,7 @@ function highlightAcrostic(displayHebrew, targetWords) {
 // normalized (non-final) form, so a name ending in ם matches a verse ending ם.
 function doNameVerseSearch(names, opts = {}) {
   if (!TANAKH) return [];
-  const { filterTorahOnly = false, filterPsalmsOnly = false } = opts;
+  const { filterTorahOnly = false, filterPsalmsOnly = false, filterExactReveal = false } = opts;
   const specs = names.map(n => {
     const c = strip(n);
     return c ? { name: n, first: c[0], last: c[c.length - 1] } : null;
@@ -1850,6 +1912,7 @@ function doNameVerseSearch(names, opts = {}) {
     const words = s.split(/\s+/);
     const nameFrac = words.length
       ? words.filter(w => properNounForm(w) !== null).length / words.length : 0;
+    const exactNames = exactNamesInVerse(s, names);
     results.push({
       ...verse,
       matchedNames: hits.map(sp => sp.name),
@@ -1858,6 +1921,8 @@ function doNameVerseSearch(names, opts = {}) {
       nameVerse: true,
       isPsalms: verse.b === "Psalms",
       nameBucket: Math.round(nameFrac * 4),   // 0..4, lower = fewer proper names
+      exactNames,
+      exactCount: exactNames.length,
       // Credit any published list that picks this verse for these initials.
       sources: traditionalSources(vFirst, vLast, verse.r),
     });
@@ -1869,6 +1934,7 @@ function doNameVerseSearch(names, opts = {}) {
   //   4. shorter verses (a tighter fit where the initials bookend the verse)
   //   5. canonical Tanakh order
   results.sort((a, b) => {
+    if (filterExactReveal && a.exactCount !== b.exactCount) return b.exactCount - a.exactCount;
     if (a.allMatched !== b.allMatched) return a.allMatched ? -1 : 1;
     if (a.isPsalms !== b.isPsalms) return a.isPsalms ? -1 : 1;
     if (a.nameBucket !== b.nameBucket) return a.nameBucket - b.nameBucket;
@@ -1911,6 +1977,7 @@ const state = {
   kbVisible: true,
   searchMode: "root",   // "root" (shoresh) | "rashei" (roshei teivot) | "nameverse" (first & last)
   filterExact: false,
+  filterExactReveal: false,
   filterTorahOnly: false,
   filterPsalmsOnly: false,
   filterStrict: true,
@@ -1929,18 +1996,13 @@ const loadingEl = $("#loadingBanner");
 const kbToggle = $("#kbToggle");
 const addBtn = $("#addBtn");
 const filterExactBtn = $("#filterExact");
+const filterExactRevealBtn = $("#filterExactReveal");
 const filterStrictBtn = $("#filterStrict");
 const filterTorahBtn = $("#filterTorah");
 const filterPsalmsBtn = $("#filterPsalms");
 const nameLabel = $(".search-card .label");
 const modeToggle = $("#modeToggle");
 const modeDesc = $("#modeDesc");
-
-const MODE_DESC = {
-  root: "Finds verses whose words share a root (shoresh) with your Hebrew name(s).",
-  rashei: "Finds verses whose consecutive words' initial letters (roshei teivot) spell your name(s) — each name and word searched in turn. Verses spelling them in the name's own order rise to the top.",
-  nameverse: "Finds verses that begin with your name's first letter and end with its last letter — the traditional verse for a person's name.",
-};
 
 // Single-name modes (first & last letter) show only the first field and hide
 // the "add another name" affordance; root (shoresh) and roshei teivot allow many.
@@ -1950,6 +2012,8 @@ function applyModeToFields() {
   addBtn.style.display = single ? "none" : "block";
   fieldsEl.querySelectorAll(".field-row").forEach((row, i) => {
     row.style.display = (single && i > 0) ? "none" : "";
+    const input = row.querySelector("input.name-field");
+    if (input) input.placeholder = single ? "Name" : `Name ${i + 1}`;
   });
   if (nameLabel) nameLabel.textContent = single ? "Enter your Hebrew name" : "Enter your Hebrew name(s)";
 }
@@ -1961,7 +2025,6 @@ function setMode(mode) {
   state.searchMode = mode;
   modeToggle.querySelectorAll(".mode-btn").forEach(b =>
     b.classList.toggle("active", b.dataset.mode === mode));
-  modeDesc.textContent = MODE_DESC[mode] || "";
   document.querySelectorAll(".filters .root-only").forEach(el => {
     el.style.display = (mode === "root") ? "" : "none";
   });
@@ -1996,7 +2059,8 @@ function buildOneField(i, val) {
   input.className = "name-field" + (state.activeIdx === i ? " active" : "") +
     (state.activeIdx === i && state.kbVisible ? " with-arrow" : "");
   input.dir = "rtl";
-  input.placeholder = `Name ${i + 1}`;
+  // Single-name modes show one unnumbered field ("Name"); multi-name modes number them.
+  input.placeholder = SINGLE_NAME_MODES.has(state.searchMode) ? "Name" : `Name ${i + 1}`;
   input.value = val;
   // Update state on every input event from any source (typing, paste, IME, on-screen kb)
   input.addEventListener("input", e => { state.names[i] = e.target.value; });
@@ -2101,7 +2165,7 @@ function renderKeyboard() {
     kbToggle.textContent = "reveal";
     return;
   }
-  kbToggle.textContent = "hide";
+  kbToggle.textContent = "conceal";
   const rows = [
     ["א","ב","ג","ד","ה","ו","ז"],
     ["ח","ט","י","כ","ך","ל","מ"],
@@ -2250,6 +2314,12 @@ function renderResults() {
     const pills = r.matchedNames.map(n =>
       `<span class="name-pill">${escapeHtml(n)}</span>`
     ).join("");
+    // When "Reveal exact name(s)" is on, mark each name that appears verbatim.
+    const exactPills = (state.filterExactReveal && r.exactNames && r.exactNames.length)
+      ? r.exactNames.map(n =>
+          `<span class="exact-pill">✦ <span class="he">${escapeHtml(n)}</span></span>`
+        ).join("")
+      : "";
     // Flags crediting any published list that picks this verse for the name.
     const flags = (r.sources || []).map(src =>
       `<span class="source-flag"><span class="pennant">⚑</span>${escapeHtml(src)}</span>`
@@ -2266,6 +2336,7 @@ function renderResults() {
           </div>
           <div class="actions">
             ${flags}
+            ${exactPills}
             ${pills}
             <button type="button" class="commission-btn" data-act="commission">Illustrate This Verse</button>
             <a class="sefaria-link" target="_blank" rel="noopener"
@@ -2441,6 +2512,7 @@ function performSearch() {
       const scope = {
         filterTorahOnly: state.filterTorahOnly,
         filterPsalmsOnly: state.filterPsalmsOnly,
+        filterExactReveal: state.filterExactReveal,
       };
       state.results = state.searchMode === "nameverse"
         ? doNameVerseSearch(filled, scope)
@@ -2480,6 +2552,12 @@ filterPsalmsBtn.addEventListener("click", () => {
 filterExactBtn.addEventListener("click", () => {
   state.filterExact = !state.filterExact;
   renderToggle(filterExactBtn, state.filterExact);
+  if (state.results !== null) performSearch();
+});
+
+filterExactRevealBtn.addEventListener("click", () => {
+  state.filterExactReveal = !state.filterExactReveal;
+  renderToggle(filterExactRevealBtn, state.filterExactReveal);
   if (state.results !== null) performSearch();
 });
 
