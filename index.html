@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seek Your Name · שורשם · Deep Well Scribal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* The Hebrew wordmark uses the "Yiddishkeit" font (Alef Alef Alef). The .woff
+     loads everywhere modern; .otf is the fallback. Keep both files next to this
+     page when you deploy. If they're missing, the wordmark falls back to Ezra SIL. */
+  @font-face {
+    font-family: 'Yiddishkeit';
+    src: url('YiddishkeitAlefAlefAlef-Bold.woff') format('woff'),
+         url('YiddishkeitAlefAlefAlef-Bold.otf')  format('opentype');
+    font-display: swap;
+  }
+  :root {
+    --ink: #2c1f0e;
+    --sep: #8b6e42;
+    --par: #f5ede0;
+    --cre: #faf6ee;
+    --rul: rgba(139, 110, 66, 0.22);
+    --rul-strong: rgba(139, 110, 66, 0.55);
+    --warm-tint: rgba(139, 110, 66, 0.04);
+    --warm-tint-strong: rgba(139, 110, 66, 0.06);
+    --F-head: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+    --F-body: 'Courier Prime', 'Courier New', Courier, monospace;
+    --F-heb: 'Ezra SIL', 'SBL Hebrew', 'Frank Ruehl', 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--cre);
+    color: var(--ink);
+    font-family: var(--F-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .top-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--sep), transparent);
+  }
+  nav {
+    width: 100%;
+    max-width: 860px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 2rem;
+    border-bottom: 1px solid var(--rul);
+  }
+  nav span {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.65rem;
+    color: var(--sep);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  header.intro {
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    max-width: 660px;
+  }
+  header.intro h1 {
+    font-family: var(--F-head);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: clamp(1.6rem, 5.5vw, 2.6rem);
+    margin: 0 0 1rem;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  /* Hebrew wordmark sits on top, the English name beneath it. */
+  header.intro h1 .brand-he {
+    display: block;
+    font-family: 'Yiddishkeit', var(--F-heb);
+    font-weight: normal;        /* the Yiddishkeit face is already bold by design */
+    direction: rtl;
+    letter-spacing: 0.04em;
+    font-size: 1.05em;
+  }
+  header.intro h1 .brand-en { display: block; margin-top: 0.5rem; }
+  /* The two ש's of שורשם (shoresh "root" + shem "name") stand taller — the
+     wordmark's drop-cap treatment, echoing the meaning of the name. They sit on
+     the baseline (vertical-align: baseline), so every letter is flush along the
+     bottom and the tall ש's rise upward. */
+  header.intro h1 .brand-tall {
+    font-size: 1.32em;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: center;
+    margin: 0 0 1.2rem;
+  }
+  .divider .line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--sep)); }
+  .divider .line.right { background: linear-gradient(90deg, var(--sep), transparent); }
+  .divider .diamond { color: var(--sep); font-size: 0.55rem; }
+  /* Long-form intro: centered heading, but the prose reads left-aligned. */
+  header.intro .intro-body {
+    text-align: left;
+    margin-top: 0.2rem;
+  }
+  header.intro .intro-body p {
+    font-size: 0.9rem;
+    color: #5a4528;
+    line-height: 1.75;
+    margin: 0 0 0.9rem;
+  }
+  header.intro .intro-body blockquote {
+    margin: 0 0 0.9rem;
+    padding-left: 0.95rem;
+    border-left: 2px solid var(--rul-strong);
+    font-style: italic;
+    color: #6b5030;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+  header.intro .intro-body a {
+    color: var(--sep);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(139, 110, 66, 0.35);
+  }
+  header.intro .intro-body a:hover { border-bottom-color: var(--sep); }
+  header.intro .intro-note {
+    font-size: 0.74rem;
+    color: rgba(139, 110, 66, 0.7);
+    line-height: 1.65;
+    border-top: 1px solid var(--rul);
+    padding-top: 0.9rem;
+    margin-top: 0.2rem;
+  }
+  header.intro .intro-note .note-label {
+    font-family: var(--F-head);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.64rem;
+    color: var(--sep);
+    margin-right: 0.35rem;
+  }
+  /* "More about this tool" disclosure — keeps the search box high on the page. */
+  header.intro .intro-more { margin-top: 0.2rem; }
+  header.intro .intro-more > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--sep);
+    padding: 0.1rem 0;
+  }
+  header.intro .intro-more > summary::-webkit-details-marker { display: none; }
+  header.intro .intro-more > summary::before {
+    content: "+";
+    font-size: 0.85rem;
+    line-height: 1;
+    color: var(--sep);
+  }
+  header.intro .intro-more[open] > summary::before { content: "–"; }
+  header.intro .intro-more > summary:hover { color: var(--ink); }
+  header.intro .intro-more > *:not(summary) { margin-top: 0.85rem; }
+  header.intro .intro-more .intro-note { margin-top: 0.85rem; }
+  .search-wrap {
+    width: 100%;
+    max-width: 560px;
+    padding: 0 1.5rem 2.5rem;
+  }
+  .search-card {
+    background: var(--par);
+    border: 1px solid var(--rul);
+    border-radius: 2px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 18px rgba(44, 31, 14, 0.07);
+  }
+  .label {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.62rem;
+    color: var(--sep);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+  }
+  .mode-toggle {
+    display: flex;
+    border: 1px solid var(--rul);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.6rem;
+  }
+  .mode-btn {
+    flex: 1;
+    background: rgba(255, 253, 245, 0.5);
+    border: none;
+    border-right: 1px solid var(--rul);
+    color: rgba(139, 110, 66, 0.7);
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.62rem 0.4rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .mode-btn:last-child { border-right: none; }
+  .mode-btn.active { background: var(--ink); color: var(--cre); }
+  .mode-desc {
+    font-size: 0.7rem;
+    color: rgba(139, 110, 66, 0.7);
+    font-style: italic;
+    line-height: 1.5;
+    margin: 0 0 1.1rem;
+  }
+  .verse-card .lead-letters {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.6rem;
+    color: var(--sep);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .verse-card .hebrew mark.edge {
+    background: rgba(139, 110, 66, 0.32);
+    font-weight: 700;
+  }
+  .verse-card .source-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--ink);
+    color: var(--cre);
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.55rem;
+    padding: 2px 7px;
+    border-radius: 1px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .verse-card .source-flag .pennant { font-size: 0.62rem; line-height: 1; }
+  .field-row {
+    margin-bottom: 0.55rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .field-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .arrow {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--sep);
+    font-size: 0.8rem;
+    pointer-events: none;
+  }
+  input.name-field {
+    width: 100%;
+    border-radius: 2px;
+    color: var(--ink);
+    font-size: 1.1rem;
+    padding: 0.55rem 0.8rem;
+    font-family: var(--F-body);
+    outline: none;
+    border: 1px solid var(--rul);
+    background: rgba(255, 253, 245, 0.5);
+    direction: rtl;
+    transition: background 0.15s, border-color 0.15s, padding 0.15s;
+  }
+  input.name-field:focus,
+  input.name-field.active {
+    background: rgba(255, 253, 245, 0.9);
+    border-color: var(--rul-strong);
+  }
+  input.name-field.with-arrow { padding-left: 1.6rem; }
+  .remove-btn {
+    background: none;
+    border: none;
+    color: rgba(139, 110, 66, 0.4);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+  }
+  .add-btn {
+    background: none;
+    border: none;
+    color: var(--sep);
+    font-size: 0.72rem;
+    cursor: pointer;
+    font-family: var(--F-body);
+    opacity: 0.75;
+    padding: 0.1rem 0;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .add-btn:hover { opacity: 1; }
+  .kb-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.15rem;
+  }
+  .kb-toggle-row .lbl {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.58rem;
+    color: rgba(139, 110, 66, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .kb-toggle-row button {
+    background: none;
+    border: none;
+    color: rgba(139, 110, 66, 0.5);
+    font-size: 0.62rem;
+    font-family: var(--F-body);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .keyboard {
+    background: rgba(248, 243, 232, 0.95);
+    border: 1px solid var(--rul);
+    border-radius: 4px;
+    padding: 0.65rem;
+    margin-top: 0.6rem;
+  }
+  .keyboard .row {
+    display: grid;
+    gap: 0.28rem;
+    margin-bottom: 0.28rem;
+    direction: rtl;
+  }
+  .keyboard button {
+    background: rgba(245, 238, 224, 0.6);
+    border: 1px solid var(--rul);
+    border-radius: 3px;
+    color: var(--ink);
+    font-size: 1.05rem;
+    font-family: var(--F-heb);
+    padding: 0.4rem 0.2rem;
+    cursor: pointer;
+    line-height: 1;
+    min-width: 0;
+    transition: background 0.1s;
+  }
+  .keyboard button:hover { background: rgba(139, 110, 66, 0.15); }
+  .keyboard .ctrl-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.28rem;
+  }
+  .keyboard .ctrl-row button {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.62rem;
+    color: var(--sep);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .keyboard .ctrl-row button.bs { font-size: 1rem; }
+  .filters {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--rul);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .filters .heading {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.58rem;
+    color: rgba(139, 110, 66, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.1rem;
+  }
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--F-body);
+  }
+  .toggle .switch {
+    display: inline-flex;
+    width: 28px;
+    height: 16px;
+    border-radius: 8px;
+    background: rgba(139, 110, 66, 0.2);
+    transition: background 0.15s;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .toggle.on .switch { background: var(--sep); }
+  .toggle .knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    transition: left 0.15s;
+  }
+  .toggle.on .knob { left: 12px; }
+  .toggle .text {
+    font-size: 0.72rem;
+    color: rgba(44, 31, 14, 0.45);
+    font-family: var(--F-body);
+  }
+  .toggle.on .text { color: var(--ink); }
+  .error {
+    color: #7a2020;
+    font-size: 0.78rem;
+    margin-top: 0.75rem;
+    font-family: var(--F-body);
+  }
+  .search-btn {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.82rem;
+    background: var(--ink);
+    color: var(--cre);
+    border: none;
+    border-radius: 2px;
+    font-size: 0.8rem;
+    font-family: var(--F-head);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .search-btn:disabled {
+    background: rgba(44, 31, 14, 0.4);
+    cursor: default;
+  }
+  .loading-banner {
+    width: 100%;
+    max-width: 560px;
+    padding: 0 1.5rem 2rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--sep);
+    font-family: var(--F-body);
+    font-style: italic;
+  }
+  .results-wrap {
+    width: 100%;
+    max-width: 800px;
+    padding: 0 1.5rem 4rem;
+  }
+  .results-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--rul);
+    flex-wrap: wrap;
+  }
+  .results-meta .count {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.62rem;
+    color: var(--sep);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .results-meta .for {
+    font-size: 0.65rem;
+    color: rgba(139, 110, 66, 0.55);
+    font-family: var(--F-body);
+  }
+  .results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+  .verse-card {
+    background: #ffffff;
+    border: 1px solid var(--rul);
+    border-radius: 2px;
+    padding: 1.4rem;
+    position: relative;
+  }
+  .verse-card.all-match {
+    background: var(--warm-tint);
+    border-color: rgba(139, 110, 66, 0.3);
+  }
+  .verse-card .badge {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    background: var(--ink);
+    color: var(--cre);
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.52rem;
+    padding: 3px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .verse-card .hebrew {
+    font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+    line-height: 2.2;
+    margin-bottom: 0.6rem;
+    direction: rtl;
+    text-align: right;
+    font-family: var(--F-heb);
+    color: var(--ink);
+  }
+  /* Any badged card needs room at the top for the badge. */
+  .verse-card.badged .hebrew { margin-top: 0.7rem; }
+  .verse-card .hebrew mark {
+    background: rgba(139, 110, 66, 0.22);
+    color: #3d2b0e;
+    border-radius: 2px;
+    padding: 1px 3px;
+    font-weight: 700;
+  }
+  /* Partial roshei-teivot matches ("One Name in Order") stay un-tinted and get a
+     lighter highlight, so full-name matches stand out. */
+  .verse-card.partial-match .hebrew mark {
+    background: rgba(139, 110, 66, 0.11);
+    color: #5a4020;
+    font-weight: 600;
+  }
+  .verse-card .english {
+    font-size: 0.82rem;
+    color: #5a4020;
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+    padding-left: 0.65rem;
+    border-left: 2px solid var(--rul);
+    font-style: italic;
+    font-family: var(--F-body);
+  }
+  .verse-card .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--rul);
+  }
+  .verse-card .refs {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .verse-card .ref-he {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.7rem;
+    color: var(--sep);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .verse-card .ref-en {
+    font-size: 0.68rem;
+    color: var(--sep);
+    font-family: var(--F-body);
+  }
+  .verse-card .actions {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .verse-card .name-pill {
+    border: 1px solid var(--rul);
+    border-radius: 1px;
+    padding: 1px 7px;
+    font-size: 0.6rem;
+    color: var(--sep);
+    font-family: var(--F-head);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .verse-card .sefaria-link {
+    font-size: 0.6rem;
+    color: rgba(139, 110, 66, 0.55);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(139, 110, 66, 0.25);
+    padding-bottom: 1px;
+    font-family: var(--F-head);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .verse-card .commission-btn {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--sep);
+    background: none;
+    border: 1px solid var(--rul-strong);
+    border-radius: 2px;
+    padding: 3px 9px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .verse-card .commission-btn:hover { background: var(--ink); color: var(--cre); border-color: var(--ink); }
+  .verse-card .commission-btn.open { background: var(--ink); color: var(--cre); border-color: var(--ink); }
+  /* Commission form: an understated parchment panel under the verse; on wide
+     screens it floats into the right margin beside the card. */
+  .commission-form {
+    margin-top: 1.1rem;
+    padding: 1.1rem 1.15rem 1.2rem;
+    border: 1px solid var(--rul);
+    border-left: 2px solid var(--sep);
+    border-radius: 2px;
+    background: var(--warm-tint-strong);
+    animation: cf-in 0.18s ease;
+  }
+  @keyframes cf-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .commission-form .cf-title {
+    font-family: var(--F-head);
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+  }
+  .commission-form .cf-sub {
+    font-size: 0.72rem;
+    color: #6b5030;
+    line-height: 1.55;
+    margin: 0.32rem 0 0.85rem;
+  }
+  .commission-form .cf-input {
+    width: 100%;
+    font-family: var(--F-body);
+    font-size: 0.8rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--rul);
+    border-radius: 2px;
+    background: rgba(255, 253, 245, 0.7);
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .commission-form .cf-input:focus { border-color: var(--rul-strong); background: rgba(255, 253, 245, 0.95); }
+  .commission-form textarea.cf-input { resize: vertical; min-height: 3.4rem; line-height: 1.5; }
+  .commission-form .cf-row { display: flex; align-items: center; gap: 0.7rem; margin-top: 0.15rem; }
+  .commission-form .cf-send {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: var(--ink);
+    color: var(--cre);
+    border: none;
+    border-radius: 2px;
+    padding: 0.55rem 1rem;
+    cursor: pointer;
+  }
+  .commission-form .cf-send:disabled { background: rgba(44, 31, 14, 0.4); cursor: default; }
+  .commission-form .cf-cancel {
+    font-family: var(--F-body);
+    font-size: 0.72rem;
+    color: rgba(139, 110, 66, 0.65);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .commission-form .cf-status { font-size: 0.74rem; font-family: var(--F-body); margin-top: 0.7rem; line-height: 1.5; }
+  .commission-form .cf-status.ok { color: #3d6b2f; }
+  .commission-form .cf-status.err { color: #7a2020; }
+  @media (min-width: 1500px) {
+    .verse-card .commission-form {
+      position: absolute;
+      top: 0;
+      left: calc(100% + 1.4rem);
+      width: 300px;
+      margin-top: 0;
+    }
+  }
+  .no-results {
+    text-align: center;
+    padding: 2rem 0;
+    color: rgba(139, 110, 66, 0.6);
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+  footer {
+    margin-top: auto;
+    width: 100%;
+    border-top: 1px solid var(--rul);
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    background: rgba(139, 110, 66, 0.025);
+  }
+  footer .note {
+    font-size: 0.62rem;
+    color: rgba(139, 110, 66, 0.4);
+    font-family: var(--F-body);
+  }
+  footer a {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.58rem;
+    color: rgba(139, 110, 66, 0.4);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-rule"></div>
+
+<nav>
+  <span>A Tool by Deep Well Scribal</span>
+  <span>בס״ד</span>
+</nav>
+
+<header class="intro">
+  <h1 class="brand"><span class="brand-he"><span class="brand-tall">ש</span>ור<span class="brand-tall">ש</span>ם</span><span class="brand-en">Seek Your Name</span></h1>
+  <div class="divider">
+    <div class="line"></div>
+    <span class="diamond">◆</span>
+    <div class="line right"></div>
+  </div>
+  <div class="intro-body">
+    <p>There’s an old custom to recite a verse associated with your name at the end of the Amidah prayer. Some siddurim (prayerbooks) even include a list of verses for people’s names based on first- and last-letter connections.</p>
+    <p>This practice is meant to help a person connect more deeply with her name. In this life, knowing your name means being in touch with your purpose and striving to fulfill it. This deep knowing, in turn, is said to help the soul pass an early trial in the afterlife: remembering her name.</p>
+    <blockquote><a href="https://www.chabad.org/library/article_cdo/aid/2451435/jewish/Names-Verses-and-Flaming-Hot-Rods.htm" target="_blank" rel="noopener">The Rebbe Rashab taught</a>: “through the letters of the ‘verses of the names,’ one merits that he is allowed to stand near the open doors and see what transpires in the Heavenly chambers.”</blockquote>
+    <details class="intro-more">
+      <summary>More about this tool</summary>
+      <p>With this search tool, you can find a verse for your name that follows the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the roshei teivot (initial letters) of your name, or go deeper and discover the meaning(s) of your name embedded in the Hebrew shoreshim (word roots) of the text itself.</p>
+      <p class="intro-note"><span class="note-label">Note</span> This tool was made with the help of Claude Code and is in ongoing development. If you notice mistakes or have ideas for improving or expanding the search function, reach out to <a href="mailto:josh@deepwell.studio">josh@deepwell.studio</a>. And if you find a verse for your name that you love and want to commission original artwork — to strengthen this practice and further illuminate this knowledge of self — click the “Illustrate This Verse” button and send a message to Josh, the scribe-in-residence at Deep Well.</p>
+    </details>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <div class="search-card">
+    <div class="mode-toggle" id="modeToggle">
+      <button type="button" class="mode-btn active" data-mode="root">Shoresh · Root</button>
+      <button type="button" class="mode-btn" data-mode="rashei">Roshei Teivot</button>
+      <button type="button" class="mode-btn" data-mode="nameverse">First &amp; Last Letter</button>
+    </div>
+    <p class="mode-desc" id="modeDesc"></p>
+    <div class="label">Enter your Hebrew name(s)</div>
+    <div id="fields"></div>
+    <button class="add-btn" id="addBtn">+ Add another name</button>
+    <div class="kb-toggle-row">
+      <span class="lbl">Hebrew Keyboard</span>
+      <button id="kbToggle">hide</button>
+    </div>
+    <div id="keyboard"></div>
+    <div class="filters">
+      <div class="heading">Filters</div>
+      <button class="toggle on root-only" id="filterStrict" type="button">
+        <span class="switch"><span class="knob"></span></span>
+        <span class="text">Significant matches only (recommended)</span>
+      </button>
+      <button class="toggle root-only" id="filterExact" type="button">
+        <span class="switch"><span class="knob"></span></span>
+        <span class="text">Hide verses containing the exact name</span>
+      </button>
+      <button class="toggle" id="filterTorah" type="button">
+        <span class="switch"><span class="knob"></span></span>
+        <span class="text">Reveal verses from the Torah (Chumash) only</span>
+      </button>
+      <button class="toggle" id="filterPsalms" type="button">
+        <span class="switch"><span class="knob"></span></span>
+        <span class="text">Reveal verses from Psalms (Tehilim) only</span>
+      </button>
+    </div>
+    <div id="error" class="error" style="display:none"></div>
+    <button class="search-btn" id="searchBtn" disabled>Loading the Tanakh…</button>
+  </div>
+</div>
+
+<div id="loadingBanner" class="loading-banner">Loading the Tanakh… (this happens once, then cached)</div>
+
+<div id="results" class="results-wrap" style="display:none"></div>
+
+<footer>
+  <span class="note">Full Tanakh · Hebrew from Miqra according to the Masorah · English from JPS 1917</span>
+  <a href="https://www.deepwell.studio" target="_blank" rel="noopener">Deep Well Scribal</a>
+</footer>
+
+<script>
+// =============== Commission inquiry settings ===============
+// Where "Illustrate This Verse" inquiries go. Two ways, in priority order:
+//   endpoint — a form-handler URL (Formspree/Getform/Netlify, etc.). If set,
+//              the form submits in-page via fetch (best experience).
+//   email    — used to build a mailto: draft when endpoint is empty; clicking
+//              "Send" opens the visitor's mail app addressed to this inbox.
+const COMMISSION = {
+  endpoint: "https://formspree.io/f/mpqezewj",   // Formspree — submits in-page
+  email: "josh@deepwell.studio",                 // shown only if a submission fails
+};
+
+// =============== Name → roots dictionary ===============
+// Maps Hebrew names to their shoresh (root) consonants.
+// Names not in this dict fall back to using their first 3 then 2 consonants.
+const NR = {
+  // Patriarchs & matriarchs
+  "אברהם":["אבר","רחם"], "יצחק":["צחק"], "יעקב":["עקב"],
+  "שרה":["שרר","שרה"], "רבקה":["רבק"], "רחל":["רחל"], "לאה":["לאה"],
+  // 12 tribes
+  "ראובן":["ראה","בנ"], "שמעון":["שמע"], "לוי":["לוה"],
+  "יהודה":["ידה"], "דן":["דנ"], "נפתלי":["פתל"],
+  "גד":["גד"], "אשר":["אשר"], "יששכר":["שכר"],
+  "זבולון":["זבל"], "יוסף":["יסף"], "בנימין":["בנ","ימן"],
+  // Torah figures
+  "משה":["משה"], "אהרן":["אהר"], "מרים":["מרה"], "יהושע":["ישע"],
+  "כלב":["כלב"], "פנחס":["פנח"], "אלעזר":["עזר"], "אליעזר":["עזר"],
+  "נח":["נוח"], "אדם":["אדם"], "חוה":["חיה","חוה"],
+  "אברם":["אבר"], "שרי":["שרר"], "חנוך":["חנכ"],
+  "יפתח":["פתח"], "שמשון":["שמש"], "גדעון":["גדע"],
+  // Kings
+  "שאול":["שאל"], "דוד":["דוד"], "שלמה":["שלם"],
+  "יהונתן":["נתן"], "אבשלום":["שלם"], "חזקיה":["חזק","יה"],
+  // Prophets
+  "שמואל":["שמע"], "אליהו":["יה"], "אלישע":["ישע"],
+  "ישעיה":["ישע","יה"], "ירמיה":["רמה","יה"],
+  "יחזקאל":["חזק"], "הושע":["ישע"], "יואל":["יה"],
+  "עמוס":["עמס"], "עובדיה":["עבד","יה"], "יונה":["יונ"],
+  "מיכה":["מכה"], "נחום":["נחם"], "חבקוק":["חבק"],
+  "צפניה":["צפנ","יה"], "חגי":["חגג"], "זכריה":["זכר","יה"],
+  "מלאכי":["מלאכ"],
+  // Angels & priestly
+  "מיכאל":["מי"], "גבריאל":["גבר"], "רפאל":["רפא"],
+  "אוריאל":["אור"], "אריאל":["אר"], "נתנאל":["נתן"],
+  "עמנואל":["עמ"], "בצלאל":["צלל"], "צדוק":["צדק"],
+  // Women
+  "חנה":["חנן"], "רות":["רות"], "נעמי":["נעם"],
+  "אסתר":["סתר"], "יעל":["יעל"], "דינה":["דנ"],
+  "תמר":["תמר"], "אביגיל":["גיל"],
+  "ציפורה":["צפר"], "צפורה":["צפר"], "יוכבד":["כבד"],
+  "אלישבע":["שבע"], "הדסה":["הדס"], "מלכה":["מלך"],
+  // Modern Israeli names — biblical and nature
+  "מעין":["עינ","מעינ"], "קשת":["קשת"], "אור":["אור"],
+  "אורית":["אור"], "אורי":["אור"], "אורן":["אור"],
+  "אורה":["אור"], "מאור":["אור"], "ליאור":["אור"],
+  "אוריה":["אור","יה"], "אלעד":["עד"], "עידן":["עד"],
+  "ניצן":["נצנ"], "ניצנה":["נצנ"], "ניר":["ניר"],
+  "טל":["טל"], "טליה":["טל","יה"], "טלי":["טל"],
+  "טליה":["טל"], "שחר":["שחר"], "שחרית":["שחר"],
+  "כוכב":["כוכב"], "כוכבה":["כוכב"], "כוכבית":["כוכב"],
+  "לבנה":["לבנ"], "לבן":["לבנ"], "לבני":["לבנ"],
+  "גשם":["גשמ"], "ענן":["עננ"], "אביב":["אביב"],
+  "אביבה":["אביב"], "אביבית":["אביב"], "נהר":["נהר"],
+  "ים":["ים"], "הר":["הר"], "ארץ":["ארצ"],
+  "שמים":["שמ","שמימ"], "ירח":["ירח"], "שמש":["שמש"],
+  "שמשון":["שמש"], "זהר":["זהר"], "זוהר":["זהר"],
+  "זיו":["זיו","זוה"], "נוגה":["נגה"], "נגוהה":["נגה"],
+  "הילה":["הל"], "אורית":["אור"], "ניצח":["נצח"],
+  // Virtues, qualities, animals
+  "חיה":["חיה"], "חיים":["חיה"], "יחיאל":["חיה"],
+  "אהבה":["אהב"], "אהוב":["אהב"], "אהובה":["אהב"],
+  "אהוד":["אהד"], "אהובי":["אהב"], "אריה":["ארי","אריה"],
+  "ארי":["ארי"], "אריאל":["ארי"], "אריה":["ארי"],
+  "דב":["דב"], "דובי":["דב"], "דבורה":["דבר","דבור"],
+  "זאב":["זאב"], "צבי":["צבי"], "צביה":["צבי"],
+  "צביקה":["צבי"], "תמר":["תמר"], "תמרה":["תמר"],
+  "נשר":["נשר"], "יונה":["יונ"], "יונת":["יונ"],
+  "ציפור":["צפר"], "אפרת":["אפר"], "אפרים":["אפר"],
+  "מנשה":["נשה"], "ברק":["ברק"], "ברקת":["ברק"],
+  "רעם":["רעמ"], "אש":["אש"], "להב":["להב"],
+  "להבה":["להב"], "להבית":["להב"],
+  "שלום":["שלם"], "שלומית":["שלם"], "שלמה":["שלם"],
+  "שלומי":["שלם"], "מנוחה":["נוח"], "מנחם":["נחם"],
+  "נחמיה":["נחם","יה"], "נחמן":["נחם"], "נחמני":["נחם"],
+  "רחמים":["רחם"], "רחמי":["רחם"], "רחמיאל":["רחם"],
+  "חיים":["חיה"], "חי":["חיה"], "חיינו":["חיה"],
+  "חיה":["חיה"], "חיאל":["חיה"], "ברוך":["ברך"],
+  "ברכה":["ברך"], "ברכי":["ברך"], "ברכיה":["ברך","יה"],
+  "ברכאל":["ברך"], "ברך":["ברך"], "מבורך":["ברך"],
+  "טוב":["טוב"], "טוביה":["טוב","יה"], "טובי":["טוב"],
+  "טובה":["טוב"], "אטיוב":["טוב"],
+  "צדק":["צדק"], "צדוק":["צדק"], "מלכי-צדק":["מלך","צדק"],
+  "צדקיה":["צדק","יה"], "צדקיהו":["צדק","יה"],
+  "אמת":["אמת"], "אמיתי":["אמת"], "תמים":["תממ"],
+  "אמונה":["אמנ"], "נאמן":["אמנ"], "אמן":["אמנ"],
+  "חסד":["חסד"], "חסדאי":["חסד"], "יחסד":["חסד"],
+  // More
+  "הלל":["הלל"], "הללי":["הלל"], "הללו":["הלל"],
+  "הללויה":["הלל","יה"], "מהלל":["הלל"], "תהלה":["הלל"],
+  "תהילה":["הלל"], "תהילות":["הלל"], "תהלים":["הלל"],
+  "ידיד":["ידד","ידיד"], "ידידיה":["ידד","יה"],
+  "דוד":["דוד"], "דודי":["דוד"], "דודית":["דוד"],
+  // דור ("generation/age") family — the naive extractor collapses דוריאל to
+  // the artificial root דרל (dropping the ו/י vowel-letters), so these are
+  // pinned here. The theophoric אל/יה is dropped during matching.
+  "דור":["דור"], "דורי":["דור"], "דוריאל":["דור"],
+  "דוריאלה":["דור"], "דוריה":["דור","יה"],
+  "רעיה":["רעה"], "רע":["רעה"], "רעי":["רעה"],
+  "רעות":["רעה"], "רעיה":["רעה"], "רענן":["רענ"],
+  "חכם":["חכמ"], "חכמה":["חכמ"], "חכמוני":["חכמ"],
+  "בינה":["בינ"], "תבונה":["בינ"], "מבין":["בינ"],
+  "דעת":["ידע"], "ידעיה":["ידע","יה"], "מודע":["ידע"],
+  "ידע":["ידע"], "קדוש":["קדש"], "קדושה":["קדש"],
+  "מקדש":["קדש"], "קדם":["קדם"], "קדמה":["קדם"],
+  "ראשון":["ראש"], "ראשית":["ראש"], "ראש":["ראש"],
+  "רוח":["רוח"], "רוחי":["רוח"], "רוחמה":["רחם"],
+  "נשמה":["נשמ"], "נשמת":["נשמ"], "נשימה":["נשמ"],
+  // More plant/nature names
+  "שושנה":["שושנ"], "שושן":["שושנ"], "ורד":["ורד"],
+  "ורדה":["ורד"], "וורד":["ורד"], "ורדית":["ורד"],
+  "הדס":["הדס"], "הדסה":["הדס"], "תפוח":["תפח"],
+  "אגוז":["אגז"], "תאנה":["תאנ"], "זית":["זית"],
+  "רימון":["רמנ"], "גפן":["גפנ"], "ארז":["ארז"],
+  "אלון":["אלנ"], "תמר":["תמר"], "תומר":["תמר"],
+  "תמרה":["תמר"], "תומרה":["תמר"], "צמח":["צמח"],
+  "פרח":["פרח"], "פרחה":["פרח"], "ניצן":["נצנ"],
+  // Strength / mountains
+  "כפיר":["כפר"], "צור":["צור"], "צוריה":["צור","יה"],
+  "סלע":["סלע"], "אבן":["אבנ"], "פז":["פז"],
+  "פזית":["פז"], "זהב":["זהב"], "זהבה":["זהב"],
+  "כסף":["כספ"], "כספי":["כספ"], "ספיר":["ספר","ספיר"],
+  "פנינה":["פננ"], "פנינית":["פננ"], "מרגלית":["מרגל"],
+  "יהל":["יהל"], "יהלום":["יהל"], "אדם":["אדם"],
+  // Compounds
+  "אביעד":["אב","עד"], "אבישי":["אב","שי"],
+  "אביגדור":["אב","גדר"], "אבינועם":["אב","נעם"],
+  "אביאל":["אב"], "אביה":["אב","יה"],
+  "אבישלום":["אב","שלם"], "אביתר":["אב","יתר"],
+  "בן-ציון":["בנ","ציון"], "בן-עמי":["בנ","עם"],
+  "אחיעזר":["אח","עזר"], "אחיטוב":["אח","טוב"],
+  "אלעד":["אל","עד"], "אלחנן":["אל","חנן"],
+  "אלנתן":["אל","נתן"], "אלקנה":["אל","קנה"],
+  "אלרועי":["אל","רעה"], "אלעזר":["אל","עזר"],
+  // Hashem-suffix forms
+  "אדניהו":["אדנ","יה"], "אוריה":["אור","יה"],
+  "אזניה":["אזנ","יה"], "אחזיה":["אחז","יה"],
+  "בניה":["בנ","יה"], "ברכיה":["ברך","יה"],
+  "גדליה":["גדל","יה"], "דניאל":["דנ"],
+  "זכריה":["זכר","יה"], "חזקיה":["חזק","יה"],
+  "חנניה":["חנן","יה"], "ידידיה":["ידד","יה"],
+  "ירמיה":["רמה","יה"], "ישעיה":["ישע","יה"],
+  "מתתיה":["נתן","יה"], "נחמיה":["נחם","יה"],
+  "נעריה":["נער","יה"], "נריה":["נר","יה"],
+  "עזריה":["עזר","יה"], "פלטיה":["פלט","יה"],
+  "צדקיה":["צדק","יה"], "צפניה":["צפנ","יה"],
+  "רעיה":["רעה"], "שמעיה":["שמע","יה"],
+  "שעריה":["שער","יה"], "שריה":["שרר","יה"],
+  "תקוה":["קוה"], "תקווה":["קוה"]
+};
+
+// =============== Hebrew text utilities ===============
+// Nikud (vowel points) + ta'amim (cantillation marks) range
+const NIKUD_RE = /[\u0591-\u05C7\u05F3\u05F4]/g;
+
+// Dash / hyphen characters that join two words \u2014 above all the Hebrew maqaf
+// (U+05BE, as in \u05D1\u05B0\u05BC\u05E0\u05B5\u05D9\u05BE\u05E9\u05B5\u05C2\u05E2\u05B4\u05D9\u05E8). These must be turned into a SPACE (a word break)
+// BEFORE nikud is stripped: U+05BE falls inside NIKUD_RE's range, so stripping
+// nikud first would delete it and fuse the two joined words into one token
+// (\u05D1\u05E0\u05D9\u05E9\u05E2\u05D9\u05E8), letting a root straddle the original boundary and match falsely.
+// The literal hyphen (-) is intentionally last so it can never be read as
+// a range bound. This mirrors strip_nikud() in build_tanakh.py.
+const DASH_RE = /[\u05BE\u2010-\u2015\u2212-]/g;
+
+// Final letter forms in Hebrew — normalize for matching since both forms
+// represent the same consonant. ך→כ, ם→מ, ן→נ, ף→פ, ץ→צ
+const FINAL_MAP = { "ך":"כ", "ם":"מ", "ן":"נ", "ף":"פ", "ץ":"צ" };
+
+// Theophoric particles — divine name fragments commonly used as suffixes in
+// Hebrew names (e.g., ישעיה = "Yah saves", נתנאל = "God gave"). When these
+// appear as one of several roots for a name, we drop them from active matching
+// because they flood results with every verse mentioning God. They remain in
+// the NR dictionary for reference, but searches don't use them as roots.
+const THEOPHORIC = new Set(["יה", "יהו", "אל", "אלי"]);
+
+// Filter theophoric particles out of a root list — but keep them if they're
+// the ONLY roots (e.g., a user searching the word אל or יה directly).
+function filterTheophoric(roots) {
+  const meaningful = roots.filter(r => !THEOPHORIC.has(r));
+  return meaningful.length > 0 ? meaningful : roots;
+}
+
+function normalizeFinals(s) {
+  return s.replace(/[ךםןףץ]/g, c => FINAL_MAP[c]);
+}
+
+function strip(s) {
+  if (!s) return "";
+  // Dashes -> word break FIRST (see DASH_RE), then strip nikud/cantillation.
+  let out = s.replace(DASH_RE, " ").replace(NIKUD_RE, "").replace(/\s+/g, " ").trim();
+  return normalizeFinals(out);
+}
+
+// Cantillation (ta'amei hamikra) marks, for DISPLAY only: we remove these while
+// KEEPING the nikud (vowel points), per the request to show vowels without the
+// chanting accents. Te'amim occupy U+0591–U+05AF; U+05BD (meteg) and U+05C4/05C5
+// are also accent marks. Nikud (U+05B0–U+05BC, U+05BF, U+05C1–U+05C2, U+05C7) and
+// the maqaf are left untouched.
+const CANTILLATION_RE = /[֑-ֽׅ֯ׄ]/g;
+function stripCantillation(s) {
+  return s ? s.replace(CANTILLATION_RE, "") : "";
+}
+
+// Defensive cleanup of English JPS text at display time — in case the
+// tanakh.json was built without the latest cleanup pass, this catches
+// remaining HTML tags, footnote markers, and bracketed editorial notes.
+function cleanEnglishAtDisplay(text) {
+  if (!text) return "";
+  // Decode common entities
+  text = text.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
+             .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+             .replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  // Remove HTML/XML tags
+  text = text.replace(/<[^>]*>/g, "");
+  // Remove Sefaria footnote markers like {S}, {P}, {N}, {ס}, {פ}
+  text = text.replace(/\{[^}]*\}/g, "");
+  // Remove short bracketed editorial markers like [a], [1], [*]
+  text = text.replace(/\[\s*[a-zA-Z0-9*\-.\s]{1,4}\s*\]/g, "");
+  // Strip leading verse number "3 " that sometimes leaks through
+  text = text.replace(/^\s*\d{1,3}\s+/, "");
+  // Collapse whitespace
+  text = text.replace(/\s+/g, " ").trim();
+  return text;
+}
+
+// Defensive cleanup of Hebrew text at display time — the Tanach with Ta'amei
+// Hamikra from Sefaria-Export contains parashah-break markers like
+// <span class="mam-spi-pe">{פ}</span><br> at the end of certain verses,
+// and HTML entities like &thinsp;׀&thinsp; around paseq punctuation.
+// Strip all HTML tags, entities, and bracketed annotation markers.
+function cleanHebrewAtDisplay(text) {
+  if (!text) return "";
+  // Decode common HTML entities
+  text = text.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
+             .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+             .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+             .replace(/&thinsp;/g, " ").replace(/&ensp;/g, " ").replace(/&emsp;/g, " ")
+             .replace(/&hellip;/g, "…").replace(/&mdash;/g, "—").replace(/&ndash;/g, "–")
+             .replace(/&#x?[0-9a-fA-F]+;/g, "");  // any remaining numeric/hex entities
+  // Remove HTML/XML tags entirely (span, br, etc.)
+  text = text.replace(/<[^>]*>/g, "");
+  // Remove parashah and section markers like {פ}, {ס}, {S}, {P}
+  text = text.replace(/\{[^}]*\}/g, "");
+  // Remove bracketed annotation markers
+  text = text.replace(/\[\s*[a-zA-Z0-9*\-.\s]{1,4}\s*\]/g, "");
+  // Remove paseq punctuation character ׀ (U+05C0) — it's a layout marker, not text
+  text = text.replace(/\u05C0/g, "");
+  // Collapse whitespace
+  text = text.replace(/\s+/g, " ").trim();
+  return text;
+}
+
+// =============== Hebrew morphology ===============
+//
+// Common Hebrew prefixes (one or more letters that can attach to the start of a word):
+//   ו (and), ה (the), ב (in/with), כ (like/as), ל (to/for), מ (from), ש (that/who)
+// Plus standard combinations like וב, וה, וכ, ול, ומ, וש, הב, etc.
+//
+// Common suffixes:
+//   ה ים ות י ך ו נו כם הם ם ן נה תי ת תם נא ני יו יה יך יכם ינו
+//
+// Letters that often appear *between* root consonants as vowel-carriers:
+//   ו (vav) — represents "o" or "u"
+//   י (yod) — represents "i" or "e"
+//   א (aleph) — sometimes a silent letter in certain forms
+//   ה (he) — sometimes serves as a vowel-carrier
+//
+// We use this knowledge to test whether a stripped word genuinely shares
+// the root with a given shoresh, rather than just containing the right letters
+// in some random order.
+
+// Prefixes we'll allow to be skipped. Each is tried in order; the FIRST match wins,
+// so longer/more-specific combos should come before single letters.
+// We're conservative here: only include genuinely common attached particles.
+const HE_PREFIXES = [
+  "וכש","ובכ","ולכ","ושב","ובש","ולש","ומש",  // 3-letter combos
+  "וב","וכ","ול","ומ","וש",                     // and + preposition
+  "כש","לש","מש",                                // also-when, to-which, from-which
+  "ש","ה","ו","ב","כ","ל","מ",                  // single-letter (last resort)
+];
+// Suffixes (pronominal endings, plural/feminine markers, possessives).
+// NOTE: We deliberately do NOT include single ן or ם here, because they're
+// often final-form root letters (e.g., מעין, שלום). Verse words are normalized
+// to non-final letters at the strip stage, so these suffixes must be too —
+// hence the .map(normalizeFinals): without it, suffixes written with a final
+// letter (ך, and the ם/ן inside כם/הם/תם/הן/תן/…) would never strip, so forms
+// like לבבך or דברכם were wrongly scored as loose instead of clean matches.
+const HE_SUFFIXES = [
+  "תיכם","תיהם","יכם","יהם","יכן","יהן",
+  "תינו","ותינו","ינו","תיך","תיו","תיה",
+  "ים","ות","יו","יה","יך","ני","נו",
+  "כם","הם","הן","תי","תם","תן","נה",
+  "תך","תה","ך","י","ה","ו","ת",
+].map(normalizeFinals);
+// Letters that can appear between root consonants as fillers (vowel-letters).
+// Used by extractRoots() when GUESSING a root from an unknown name.
+const FILLER = new Set(["ו","י","א","ה"]);
+
+// Letters allowed to be SKIPPED between root consonants when matching a word to
+// a root. Deliberately tighter than FILLER: only ו and י are true matres
+// lectionis (internal vowel-letters). ה and א are almost always real consonants
+// or binyan/prefix markers, so allowing them to be skipped produced false
+// matches — e.g. לב ("heart") matched לְהַבְדִּיל ("to separate", root בדל) by
+// skipping the ה in ל־ה־ב. Restricting to ו/י kills that whole class of noise.
+const MATRES = new Set(["ו","י"]);
+
+// Strip one common prefix if present (only one)
+function stripPrefix(word) {
+  for (const p of HE_PREFIXES) {
+    if (word.length > p.length + 1 && word.startsWith(p)) {
+      return word.slice(p.length);
+    }
+  }
+  return word;
+}
+
+// Strip one common suffix if present (only one)
+function stripSuffix(word) {
+  for (const s of HE_SUFFIXES) {
+    if (word.length > s.length + 1 && word.endsWith(s)) {
+      return word.slice(0, word.length - s.length);
+    }
+  }
+  return word;
+}
+
+// Strict root match: the root's consonants must appear in `word` in order,
+// with only filler letters (vowel-carriers) between them, after stripping
+// at most one common prefix and one common suffix.
+//
+// This is the heart of "significant matches only" — words like אריאל
+// will no longer match the root אור because the letters aren't consecutive
+// root consonants, but words like אורי, מאיר, יאיר, ויאר still match.
+function matchesRootStrict(word, root) {
+  if (!root || root.length < 2 || !word) return false;
+  // Try with no stripping, then with prefix only, then prefix + suffix.
+  const candidates = [
+    word,
+    stripPrefix(word),
+    stripSuffix(word),
+    stripSuffix(stripPrefix(word)),
+  ];
+  for (const candidate of candidates) {
+    if (matchInsideStem(candidate, root)) return true;
+  }
+  return false;
+}
+
+// How cleanly `token` realizes `root`, used for relevance ranking:
+//   3  the word IS the root exactly (e.g. token לב for root לב)
+//   2  the root is the whole stem after stripping ≤1 prefix and/or ≤1 suffix
+//      (e.g. בלב, לבי, לבך — a "clean" inflection of the root)
+//   1  a looser match: root letters in order but with extra/internal letters
+//      (e.g. the geminate לבב, or a buried match)
+//   0  no match
+// Higher is a stronger signal that the verse is really "about" the name.
+function rootMatchQuality(token, root) {
+  if (!matchesRootStrict(token, root)) return 0;
+  if (token === root) return 3;
+  if (stripPrefix(token) === root ||
+      stripSuffix(token) === root ||
+      stripSuffix(stripPrefix(token)) === root) return 2;
+  // Geminate inflection of a (usually biconsonantal) root: the same root with
+  // its final letter doubled — e.g. לב→לבב ("heart"), חן→חנן, גן→גנן. These are
+  // genuine forms of the word, so treat them as clean too. This keeps לבב in
+  // while still scoring לבני ("for my son", root בן) as a merely-loose match.
+  const gem = root + root[root.length - 1];
+  if (token === gem ||
+      stripPrefix(token) === gem ||
+      stripSuffix(token) === gem ||
+      stripSuffix(stripPrefix(token)) === gem) return 2;
+  return 1;
+}
+
+// Does `sub` (a root) appear inside `container` (a lemma skeleton) starting at
+// the front, allowing only matres (ו/י) skips and a single leading noun
+// preformative (מ/ת, as in מִשְׁמָר from שמר, תּוֹרָה-type)? Used to decide whether a
+// word's dictionary lemma actually relates to the searched root.
+const PREFORMATIVE = new Set(["מ", "ת"]);
+function tightContains(container, sub) {
+  if (!container || !sub || container.length < sub.length) return false;
+  let pos = 0;
+  for (let ri = 0; ri < sub.length; ri++) {
+    const target = sub[ri];
+    const maxSkip = ri === 0 ? 1 : 2;
+    let found = -1;
+    for (let s = 0; s <= maxSkip && pos + s < container.length; s++) {
+      const c = container[pos + s];
+      if (c === target) { found = pos + s; break; }
+      const skippable = (ri === 0 && s === 0)
+        ? (MATRES.has(c) || PREFORMATIVE.has(c))   // leading matres or noun-preformative
+        : MATRES.has(c);
+      if (!skippable) break;
+    }
+    if (found < 0) return false;
+    pos = found + 1;
+  }
+  return true;
+}
+
+// Lemma filter: should a (word, root) letter-match be KEPT? `lemmaStr` is the
+// word's dictionary-lemma skeleton(s) for THIS verse occurrence (space-joined),
+// from the morphology baked into tanakh.json. If we have no lemma for the word
+// (base form, or alignment gap) we keep the match. Otherwise we keep it only
+// when the root actually relates to one of the lemmas (either contains the
+// other) — so שים ("put", lemma שום) stops matching ים ("sea"), and לבנו
+// ("his son", lemma בן) stops matching לב ("heart"), while בלב/לבי/מאור/לבב
+// (genuinely from those roots) still match.
+function lemmaOk(word, root, lemmaStr) {
+  if (!lemmaStr) return true;
+  for (const skel of lemmaStr.split(" ")) {
+    if (tightContains(skel, root) || tightContains(root, skel)) return true;
+  }
+  return false;
+}
+
+// Within a candidate stem, look for the root letters in order, allowing only
+// matres lectionis (ו י) between them. The first root letter should appear
+// at position 0 or 1 (allowing one stray letter for forms like הִתְ-).
+function matchInsideStem(stem, root) {
+  if (stem.length < root.length) return false;
+  // Find each root letter in order, requiring intervening chars to be fillers.
+  // Start search at most position 1 (to tolerate certain doubled prefixes).
+  for (let startBudget = 0; startBudget <= 1; startBudget++) {
+    let pos = startBudget;
+    let ok = true;
+    for (let ri = 0; ri < root.length; ri++) {
+      const target = root[ri];
+      if (pos >= stem.length) { ok = false; break; }
+      // Allow up to 2 filler letters between root consonants (3 for first)
+      const maxSkip = ri === 0 ? startBudget : 2;
+      let found = -1;
+      for (let s = 0; s <= maxSkip && pos + s < stem.length; s++) {
+        if (stem[pos + s] === target) { found = pos + s; break; }
+        // Only allow skipping matres lectionis (ו/י)
+        if (!MATRES.has(stem[pos + s])) break;
+      }
+      if (found < 0) { ok = false; break; }
+      pos = found + 1;
+    }
+    if (ok) return true;
+  }
+  return false;
+}
+
+// The old loose matching — still useful as a fallback for unknown names
+// where we're not confident about the root, and for the on-screen highlighting
+// of words inside verses.
+function hasRootLoose(word, root) {
+  if (!root || root.length < 2) return false;
+  let p = 0;
+  for (const c of root) {
+    const i = word.indexOf(c, p);
+    if (i < 0) return false;
+    p = i + 1;
+  }
+  return true;
+}
+
+// Wrapper: switch based on strict mode
+function hasRoot(word, root, strict = true) {
+  return strict ? matchesRootStrict(word, root) : hasRootLoose(word, root);
+}
+
+// =============== Name → root extraction ===============
+//
+// For unknown names, we extract the likely root by:
+//  1. Stripping common prefixes and suffixes
+//  2. Removing filler letters (vowel-carriers) from inside the stem
+//  3. Taking the resulting consonants as the root
+//
+// Examples:
+//   "אורית" → strip suffix "ית" → "אור" → root [אור]
+//   "מאיר" → strip prefix "מ" → "איר" → remove filler א,י → "ר" too short, so
+//            also try the full word with internal filler removal → "מאיר" → "מר" — also too short
+//            ... fallback to first 3 consonants of stripped word.
+// This is imperfect but much better than blindly taking first 3 letters.
+
+function extractRoots(name) {
+  const c = strip(name);
+  if (!c) return [];
+  const candidates = new Set();
+
+  // The word itself if it's short enough to BE a root (2-4 letters)
+  if (c.length >= 2 && c.length <= 4) candidates.add(c);
+
+  // Strip common affixes, then collect candidate roots
+  const variants = new Set([
+    c,
+    stripPrefix(c),
+    stripSuffix(c),
+    stripSuffix(stripPrefix(c)),
+  ]);
+
+  for (const v of variants) {
+    // The variant itself, if it's a reasonable root length
+    if (v.length >= 3 && v.length <= 4) candidates.add(v);
+    // Variant with internal fillers removed (but keep first/last in place)
+    const consonants = v.split("").filter((ch, i, arr) => {
+      if (!FILLER.has(ch)) return true;
+      return i === 0 || i === arr.length - 1;
+    }).join("");
+    if (consonants.length >= 3 && consonants.length <= 4) candidates.add(consonants);
+  }
+
+  // Filter out theophoric particles (too common — would flood results)
+  let result = [...candidates].filter(r => !THEOPHORIC.has(r));
+
+  // PREFER 3+ LETTER ROOTS over 2-letter ones. Hebrew roots are overwhelmingly
+  // 3-letter (rarely 4); 2-letter "roots" are usually just incidental letter
+  // pairs that produce many false positives (e.g., אר matching ארור, ארץ, אחר).
+  const longEnough = result.filter(r => r.length >= 3);
+  if (longEnough.length > 0) {
+    result = longEnough;
+  }
+  // If we have NO 3+ letter candidates AT ALL, only then fall back to 2-letter
+  // ones — but limit it so we don't include too many noise candidates.
+  return result;
+}
+
+// Look up roots for a name. Checks the explicit NR dictionary first
+// (which captures historical/traditional shorashim), then falls back
+// to morphological extraction. In both cases, drop theophoric particles
+// when other roots are available, since יה and אל appear in countless verses
+// and would otherwise flood results for theophoric names like ישעיה or נתנאל.
+//
+// normFinals() normalizes final letters (ך→כ, ם→מ, …) on every root. This is
+// essential for the hand-written NR values: roots like שלם / ים / ברך / נתן
+// were typed with final letters, but verse text is normalized to regular forms,
+// so without this they could NEVER match — searching שלום ("peace"!) returned
+// nothing. Extraction-derived roots are already normalized; applying it again
+// is harmless.
+function getRoots(name) {
+  const normFinals = rs => rs.map(normalizeFinals);
+  const c = strip(name);
+  if (!c) return [];
+  // Whole-name dictionary lookup first. This also covers compound dictionary
+  // keys like "בן-ציון" or "מלכי-צדק": strip() has already turned their dash
+  // into a space, and the keys are stripped the same way before comparison.
+  for (const [k, r] of Object.entries(NR)) {
+    if (strip(k) === c) return normFinals(filterTheophoric(r));
+  }
+  // Compound name not in the dictionary (e.g. אבי־לב). The dash/space means
+  // "two words"; treat each part independently and union their roots, so a
+  // verse matches when it shares a root with ANY part. Without this, אבי־לב was
+  // looked up as the single nonexistent word "אבילב" and found nothing — even
+  // though אבי and לב are each common.
+  if (c.includes(" ")) {
+    const roots = [];
+    for (const part of c.split(/\s+/)) {
+      if (part) roots.push(...getRoots(part));
+    }
+    return normFinals(filterTheophoric([...new Set(roots)]));
+  }
+  return normFinals(filterTheophoric(extractRoots(c)));
+}
+
+// A verse word counts as a proper noun when its consonantal form — or its form
+// after stripping one common prefix (וכדרלעומר → כדרלעומר) — is in PROPER_NOUNS,
+// the build-time set of Hebrew forms the Tanakh uses ONLY as names. Returns the
+// bare proper-noun form (for an exact-name comparison), or null if not a name.
+function properNounForm(word) {
+  if (PROPER_NOUNS.has(word)) return word;
+  const sp = stripPrefix(word);
+  if (sp !== word && PROPER_NOUNS.has(sp)) return sp;
+  return null;
+}
+
+// Words that are names/titles of God — used to filter "divine name" verses
+const DIVINE_WORDS = new Set([
+  "יהוה","אלהים","אלהינו","אלהיך","אלהיו","אלהיכם","אלהיהם","אלהי",
+  "אדני","אדנינו","שדי","אל","אלוה","אלוהים",
+  "צבאות","עליון","קדוש","עולם","הוא"
+]);
+
+function verseMentionsDivine(stripped_text) {
+  return stripped_text.split(/\s+/).some(w => DIVINE_WORDS.has(w));
+}
+
+function verseContainsExact(stripped_text, name) {
+  // For a compound name (e.g. אבי־לב) the verse counts as "containing the exact
+  // name" if it contains ANY part as a whole word.
+  const parts = strip(name).split(/\s+/).filter(Boolean);
+  const words = stripped_text.split(/\s+/);
+  return parts.some(p => words.includes(p));
+}
+
+// =============== Tanakh data ===============
+let TANAKH = null;
+// Forms the Tanakh uses ONLY as proper names (built at build time from
+// morphology, shipped inside tanakh.json). Used to keep an unrelated name from
+// surfacing just because it shares a root with the searched name.
+let PROPER_NOUNS = new Set();
+let LOADING_ERROR = null;
+
+// English book name → Hebrew book name (for Hebrew references in results)
+const BOOK_HE = {
+  "Genesis":"בראשית","Exodus":"שמות","Leviticus":"ויקרא","Numbers":"במדבר","Deuteronomy":"דברים",
+  "Joshua":"יהושע","Judges":"שופטים",
+  "I Samuel":"שמואל א","II Samuel":"שמואל ב","1 Samuel":"שמואל א","2 Samuel":"שמואל ב",
+  "I Kings":"מלכים א","II Kings":"מלכים ב","1 Kings":"מלכים א","2 Kings":"מלכים ב",
+  "Isaiah":"ישעיהו","Jeremiah":"ירמיהו","Ezekiel":"יחזקאל",
+  "Hosea":"הושע","Joel":"יואל","Amos":"עמוס","Obadiah":"עובדיה","Jonah":"יונה",
+  "Micah":"מיכה","Nahum":"נחום","Habakkuk":"חבקוק","Zephaniah":"צפניה","Haggai":"חגי",
+  "Zechariah":"זכריה","Malachi":"מלאכי",
+  "Psalms":"תהלים","Proverbs":"משלי","Job":"איוב","Song of Songs":"שיר השירים",
+  "Ruth":"רות","Lamentations":"איכה","Ecclesiastes":"קהלת","Esther":"אסתר",
+  "Daniel":"דניאל","Ezra":"עזרא","Nehemiah":"נחמיה",
+  "I Chronicles":"דברי הימים א","II Chronicles":"דברי הימים ב",
+};
+
+// Hebrew numerals 1-150 (covers all chapters / most verses)
+const NUM_HE = (function() {
+  const ones = ["","א","ב","ג","ד","ה","ו","ז","ח","ט"];
+  const teens = ["י","יא","יב","יג","יד","טו","טז","יז","יח","יט"];
+  const tens = ["","י","כ","ל","מ","נ","ס","ע","פ","צ"];
+  const hundreds = ["","ק","ר","ש","ת"];
+  function he(n) {
+    if (n < 1) return String(n);
+    if (n === 15) return "טו";
+    if (n === 16) return "טז";
+    let out = "";
+    const h = Math.floor(n / 100);
+    if (h > 0) {
+      out += hundreds[h] || "";
+      n = n % 100;
+    }
+    if (n >= 20) {
+      out += tens[Math.floor(n / 10)];
+      n = n % 10;
+      if (n > 0) out += ones[n];
+    } else if (n >= 10) {
+      out += teens[n - 10];
+    } else if (n > 0) {
+      out += ones[n];
+    }
+    return out;
+  }
+  const m = {};
+  for (let i = 1; i <= 200; i++) m[i] = he(i);
+  return m;
+})();
+
+function hebRef(book, ch, vs) {
+  const b = BOOK_HE[book] || book;
+  return `${b} ${NUM_HE[ch] || ch}:${NUM_HE[vs] || vs}`;
+}
+
+// =============== Search ===============
+// Section a book belongs to (used for the "Torah only" filter and canonical ordering)
+const TORAH_BOOKS = new Set(["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy"]);
+const PROPHETS_BOOKS = new Set(["Joshua", "Judges", "I Samuel", "II Samuel", "I Kings", "II Kings",
+  "Isaiah", "Jeremiah", "Ezekiel",
+  "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum",
+  "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi"]);
+
+// Canonical book order for sorting (rough — Torah → Nevi'im → Ketuvim)
+const BOOK_ORDER = [
+  "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
+  "Joshua","Judges","I Samuel","II Samuel","I Kings","II Kings",
+  "Isaiah","Jeremiah","Ezekiel",
+  "Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum",
+  "Habakkuk","Zephaniah","Haggai","Zechariah","Malachi",
+  "Psalms","Proverbs","Job","Song of Songs","Ruth","Lamentations",
+  "Ecclesiastes","Esther","Daniel","Ezra","Nehemiah",
+  "I Chronicles","II Chronicles",
+];
+const BOOK_INDEX = {};
+BOOK_ORDER.forEach((b, i) => BOOK_INDEX[b] = i);
+
+// Do the ordered search `terms` appear as consecutive words in `words`, each a
+// clean match (quality ≥ 2)? Requires at least two terms. This is what lifts a
+// verse that literally contains the name-phrase (e.g. בְּלֶב־יָם, "Lev-Yam") to
+// the very top, instead of leaving it buried among coincidental letter matches.
+function phraseAdjacent(words, terms, lemmas) {
+  if (terms.length < 2) return false;
+  for (let k = 0; k + terms.length <= words.length; k++) {
+    let ok = true;
+    for (let i = 0; i < terms.length; i++) {
+      const w = words[k + i];
+      const lemmaStr = lemmas ? lemmas[k + i] : "";
+      let q = 0;
+      for (const r of terms[i].roots) {
+        if (lemmaStr && !lemmaOk(w, r, lemmaStr)) continue;
+        const qq = rootMatchQuality(w, r);
+        if (qq > q) q = qq;
+      }
+      if (q < 2) { ok = false; break; }
+    }
+    if (ok) return true;
+  }
+  return false;
+}
+
+function doSearch(names, opts = {}) {
+  if (!TANAKH) return [];
+  const {
+    filterExact = false,
+    filterTorahOnly = false,
+    filterPsalmsOnly = false,
+    filterStrict = true,  // strict morphological matching is now the DEFAULT
+  } = opts;
+
+  const pairs = names.map(n => ({ name: n, stripped: strip(n) }));
+
+  // Ordered search terms: every name field split into its parts, so a compound
+  // name like אבי־לב contributes both אבי and לב. Each term remembers which
+  // name field (nameIdx) it came from, so we can tell when all the names matched.
+  const terms = [];
+  pairs.forEach((p, ni) => {
+    for (const form of p.stripped.split(/\s+/).filter(Boolean)) {
+      terms.push({ form, roots: getRoots(form), nameIdx: ni });
+    }
+  });
+
+  // Score a word against a root (0 = no match). In the default strict mode this
+  // is the graded rootMatchQuality; with "significant matches only" turned OFF
+  // we fall back to loose substring matching (quality 1 for any hit) so that
+  // toggle still broadens results.
+  const matchFn = filterStrict
+    ? rootMatchQuality
+    : (w, r) => (hasRootLoose(w, r) ? 1 : 0);
+
+  const results = [];
+  for (const verse of TANAKH) {
+    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
+    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+
+    const words = verse.s.split(/\s+/);
+    const lemmas = verse.l;                   // per-word lemma skeletons (or undefined)
+    const matchedWords = new Set();           // words that triggered a match
+    const nameMatched = new Array(pairs.length).fill(false);
+    let relevance = 0;                        // sum of best per-term match quality
+    let coverage = 0;                         // how many distinct terms matched
+
+    for (const t of terms) {
+      let bestQ = 0;
+      for (const r of t.roots) {
+        for (let wi = 0; wi < words.length; wi++) {
+          const w = words[wi];
+          const q = matchFn(w, r);
+          if (q === 0) continue;
+          // Skip a word that is some OTHER proper name (people/place) — it only
+          // shares letters by coincidence. A proper noun that IS this term
+          // (t.form) still counts.
+          const pn = properNounForm(w);
+          if (pn !== null && pn !== t.form) continue;
+          // Skip a coincidental letter-match whose actual dictionary word is
+          // unrelated to the root (e.g. לבנו "his son" vs לב "heart"). Only in
+          // strict mode, and only when we have a lemma for this occurrence.
+          if (filterStrict && lemmas && !lemmaOk(w, r, lemmas[wi])) continue;
+          if (q > bestQ) bestQ = q;
+          matchedWords.add(w);
+        }
+      }
+      if (bestQ > 0) {
+        relevance += bestQ;
+        nameMatched[t.nameIdx] = true;
+        if (bestQ >= 2) coverage++;   // count only CLEAN term matches for ranking
+      }
+    }
+
+    const matchedNames = pairs.filter((p, i) => nameMatched[i]).map(p => p.name);
+    if (matchedNames.length === 0) continue;
+    if (filterExact && pairs.some(p => verseContainsExact(verse.s, p.stripped))) continue;
+
+    results.push({
+      ...verse,
+      matchedNames,
+      matchedWords: [...matchedWords],
+      allMatched: matchedNames.length === names.length,
+      multi: names.length > 1,
+      coverage,
+      relevance,
+      // True when the search terms appear as consecutive words in order — a
+      // strong sign the verse is the actual phrase the name was taken from.
+      phrase: phraseAdjacent(words, terms, lemmas),
+    });
+  }
+
+  // Sort by relevance, most meaningful first:
+  //   1. verses containing the name(s) as an adjacent phrase (e.g. בלב ים)
+  //   2. verses where every name field matched (ALL the names are present) —
+  //      this outranks match quality, so a verse with all three names (even via
+  //      inflected/loose forms, e.g. Psalms 37:40 for יהושע·אליעזר·פליט) beats a
+  //      verse that has only one of them, however cleanly
+  //   3. verses covering MORE of the distinct name-parts (both father AND heart)
+  //   4. higher total match quality (exact/clean roots beat loose ones)
+  //   5. canonical Tanakh order as a stable tie-breaker
+  results.sort((a, b) => {
+    if (a.phrase !== b.phrase) return a.phrase ? -1 : 1;
+    if (a.allMatched !== b.allMatched) return a.allMatched ? -1 : 1;
+    if (a.coverage !== b.coverage) return b.coverage - a.coverage;
+    if (a.relevance !== b.relevance) return b.relevance - a.relevance;
+    const ai = BOOK_INDEX[a.b] ?? 999;
+    const bi = BOOK_INDEX[b.b] ?? 999;
+    if (ai !== bi) return ai - bi;
+    if (a.c !== b.c) return a.c - b.c;
+    return a.v - b.v;
+  });
+  return results;
+}
+
+// =============== Traditional name-verse lists (data-driven flags) ===============
+// Some printed sources publish a specific verse for each first+last-letter
+// combination of a name (Chabad's siddur, ArtScroll, etc.). When a name-verse
+// result matches one of those published picks, we show a small flag crediting
+// the source. Those lists are other people's curated compilations, so none is
+// bundled here — drop in a list you have the rights to and the flags light up.
+//
+// Format: key is "<firstLetter>|<lastLetter>" using NON-FINAL Hebrew letters
+// (the same normalized forms strip() produces, e.g. "א|ם"); value is a list of
+// { src, ref } where `ref` is the English verse reference exactly as it appears
+// in tanakh.json (e.g. "Psalms 104:1"). Example (commented out):
+//   "א|ם": [{ src: "Chabad", ref: "..." }, { src: "ArtScroll", ref: "..." }],
+const NAME_VERSE_SOURCES = {
+  // (empty — populate with a list you are permitted to use)
+};
+
+// Sources (if any) that list `verse` as the name-verse for the given first/last
+// letters. Returns an array of source labels, e.g. ["Chabad"].
+function traditionalSources(first, last, ref) {
+  const entries = NAME_VERSE_SOURCES[first + "|" + last];
+  if (!entries) return [];
+  return entries.filter(e => e.ref === ref).map(e => e.src);
+}
+
+// =============== Roshei teivot (acrostic) search ===============
+// Find verses whose consecutive words' INITIAL letters spell the name. Every
+// word of every name field is its own target (its letters): so יהושע / אליעזר /
+// פליט are three acrostics — a verse may satisfy one, all are flagged "all
+// present" when every target is found, and a verse that spells them out IN THE
+// NAME'S ORDER (one run after another, left to right) is flagged "name in order"
+// and floated to the very top. Initials are literal first letters (prefixes
+// included), the way roshei teivot are traditionally read.
+
+// Turn the filled name fields into ordered word-targets {word, letters}.
+function rosheiTargets(names) {
+  const out = [];
+  for (const n of names) {
+    for (const w of strip(n).split(/\s+/)) {
+      if (w.length >= 2) out.push({ word: w, letters: [...w] });
+    }
+  }
+  return out;
+}
+
+// Start index of the first run in `initials` matching `letters` in order at or
+// after `from`, or -1. Both are arrays of single (normalized) letters.
+function acrosticRun(initials, letters, from = 0) {
+  outer:
+  for (let k = from; k + letters.length <= initials.length; k++) {
+    for (let i = 0; i < letters.length; i++) {
+      if (initials[k + i] !== letters[i]) continue outer;
+    }
+    return k;
+  }
+  return -1;
+}
+
+// All permutations of [0..n-1] (n kept small — only used for 3–5 targets).
+function permutations(arr) {
+  if (arr.length <= 1) return [arr];
+  const out = [];
+  for (let i = 0; i < arr.length; i++) {
+    const rest = arr.slice(0, i).concat(arr.slice(i + 1));
+    for (const p of permutations(rest)) out.push([arr[i], ...p]);
+  }
+  return out;
+}
+
+// Does the whole name appear as a CONTIGUOUS block of words (every target's
+// letters back-to-back, no intervening words that aren't part of the name)?
+// Returns { status, start, len }:
+//   'forward' — the parts in the name's order (T1·T2·…·Tn)
+//   'reverse' — the parts in reverse order (Tn·…·T1)
+//   'other'   — some other contiguous order (only possible with 3+ parts)
+// or null if no such contiguous block exists. Forward beats reverse beats other.
+function contiguousAcrostic(initials, letterArrays) {
+  const n = letterArrays.length;
+  const cat = order => order.reduce((a, i) => a.concat(letterArrays[i]), []);
+  const idx = [...Array(n).keys()];
+  const fwd = cat(idx);
+  let k = acrosticRun(initials, fwd);
+  if (k >= 0) return { status: "forward", start: k, len: fwd.length };
+  const rev = cat([...idx].reverse());
+  k = acrosticRun(initials, rev);
+  if (k >= 0) return { status: "reverse", start: k, len: rev.length };
+  if (n >= 3 && n <= 5) {
+    for (const perm of permutations(idx)) {
+      const seq = cat(perm);
+      const kk = acrosticRun(initials, seq);
+      if (kk >= 0) return { status: "other", start: kk, len: seq.length };
+    }
+  }
+  return null;
+}
+
+const STATUS_RANK = { forward: 3, reverse: 2, other: 1 };
+
+function doRosheiTeivotSearch(names, opts = {}) {
+  if (!TANAKH) return [];
+  const { filterTorahOnly = false, filterPsalmsOnly = false } = opts;
+  const targets = rosheiTargets(names);
+  if (!targets.length) return [];
+  const multi = targets.length > 1;
+  const letterArrays = targets.map(t => t.letters);
+
+  const results = [];
+  for (const verse of TANAKH) {
+    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
+    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    const words = verse.s.split(/\s+/);
+    if (words.length < 2) continue;
+    const initials = words.map(w => w[0]);
+    const matched = targets.filter(t => acrosticRun(initials, t.letters) >= 0).map(t => t.word);
+    if (!matched.length) continue;
+    const allMatched = matched.length === targets.length;
+    // Flag how the name reads as an acrostic:
+    //  - a single name (one target) is always spelled in consecutive order, so
+    //    every match is "forward" (in order);
+    //  - a multi-part name is flagged only when ALL parts are present AND
+    //    contiguous (no intervening non-name words), forward/reverse/other.
+    const status = !allMatched ? null
+      : !multi ? "forward"
+      : (contiguousAcrostic(initials, letterArrays) || {}).status || null;
+    const nameFrac = words.filter(w => properNounForm(w) !== null).length / words.length;
+    results.push({
+      ...verse,
+      matchedNames: matched,
+      allMatched,
+      status,            // 'forward' | 'reverse' | 'other' | null
+      multi,
+      rashei: true,
+      isPsalms: verse.b === "Psalms",
+      nameBucket: Math.round(nameFrac * 4),
+      coverage: matched.length,
+      sources: [],
+    });
+  }
+  // Contiguous matches first (forward, then reverse, then any other order), then
+  // by how many parts matched, then Psalms, fewer proper names, shorter, canon.
+  results.sort((a, b) => {
+    const sr = (STATUS_RANK[b.status] || 0) - (STATUS_RANK[a.status] || 0);
+    if (sr) return sr;
+    if (a.coverage !== b.coverage) return b.coverage - a.coverage;
+    if (a.isPsalms !== b.isPsalms) return a.isPsalms ? -1 : 1;
+    if (a.nameBucket !== b.nameBucket) return a.nameBucket - b.nameBucket;
+    if (a.s.length !== b.s.length) return a.s.length - b.s.length;
+    const ai = BOOK_INDEX[a.b] ?? 999, bi = BOOK_INDEX[b.b] ?? 999;
+    if (ai !== bi) return ai - bi;
+    if (a.c !== b.c) return a.c - b.c;
+    return a.v - b.v;
+  });
+  return results;
+}
+
+// Mark the words whose initials spell the name. If the whole name appears as one
+// contiguous block (any order), mark that block; otherwise mark each target's
+// first run. Works on the display Hebrew directly — no alignment with verse.s.
+function highlightAcrostic(displayHebrew, targetWords) {
+  const tokens = displayHebrew.split(/(\s+|[־׀׃]+)/);
+  const isSep = tok => tok === "" || /^(\s|[־׀׃])+$/.test(tok);
+  const wordPos = [];                       // { ti, initial } for each word token
+  tokens.forEach((tok, ti) => {
+    if (!isSep(tok)) {
+      const m = tok.match(/[א-ת]/);
+      wordPos.push({ ti, initial: m ? m[0] : "" });
+    }
+  });
+  const initials = wordPos.map(w => w.initial);
+  const letterArrays = targetWords.map(tw => [...strip(tw)]).filter(a => a.length >= 2);
+  const mark = new Set();
+  const addRun = (start, len) => { for (let i = 0; i < len; i++) mark.add(wordPos[start + i].ti); };
+  const block = letterArrays.length >= 2 ? contiguousAcrostic(initials, letterArrays) : null;
+  if (block) {
+    addRun(block.start, block.len);
+  } else {
+    for (const letters of letterArrays) {
+      const k = acrosticRun(initials, letters);
+      if (k >= 0) addRun(k, letters.length);
+    }
+  }
+  return tokens.map((tok, ti) =>
+    mark.has(ti) ? `<mark>${escapeHtml(tok)}</mark>` : escapeHtml(tok)
+  ).join("");
+}
+
+// =============== Name-verse search ===============
+// The traditional "verse for your name": a verse that BEGINS with the first
+// letter of the name and ENDS with its last letter. Computed directly from the
+// Tanakh — verse.s is letters-only with finals normalized, so its first and last
+// characters ARE the verse's first/last letters. Letters are compared in
+// normalized (non-final) form, so a name ending in ם matches a verse ending ם.
+function doNameVerseSearch(names, opts = {}) {
+  if (!TANAKH) return [];
+  const { filterTorahOnly = false, filterPsalmsOnly = false } = opts;
+  const specs = names.map(n => {
+    const c = strip(n);
+    return c ? { name: n, first: c[0], last: c[c.length - 1] } : null;
+  }).filter(Boolean);
+  if (!specs.length) return [];
+
+  const results = [];
+  for (const verse of TANAKH) {
+    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
+    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    const s = verse.s;
+    if (!s) continue;
+    const vFirst = s[0], vLast = s[s.length - 1];
+    const hits = specs.filter(sp => sp.first === vFirst && sp.last === vLast);
+    if (!hits.length) continue;
+    // "Meaningfulness" signal: what fraction of the verse is proper names? A
+    // genealogical list ("X son of Y, Z son of W…") is mostly names and reads as
+    // a poor name-verse; a Psalms line is mostly ordinary, evocative words.
+    const words = s.split(/\s+/);
+    const nameFrac = words.length
+      ? words.filter(w => properNounForm(w) !== null).length / words.length : 0;
+    results.push({
+      ...verse,
+      matchedNames: hits.map(sp => sp.name),
+      allMatched: hits.length === specs.length,
+      multi: false,                            // single letter-pair — no "all present" badge
+      nameVerse: true,
+      isPsalms: verse.b === "Psalms",
+      nameBucket: Math.round(nameFrac * 4),   // 0..4, lower = fewer proper names
+      // Credit any published list that picks this verse for these initials.
+      sources: traditionalSources(vFirst, vLast, verse.r),
+    });
+  }
+  // Favor the most meaningful verses, most meaningful first:
+  //   1. all names present (trivially true in single-name mode)
+  //   2. Psalms (Tehillim) — the traditional, reliably-meaningful source
+  //   3. fewer proper names (push genealogical name-lists down)
+  //   4. shorter verses (a tighter fit where the initials bookend the verse)
+  //   5. canonical Tanakh order
+  results.sort((a, b) => {
+    if (a.allMatched !== b.allMatched) return a.allMatched ? -1 : 1;
+    if (a.isPsalms !== b.isPsalms) return a.isPsalms ? -1 : 1;
+    if (a.nameBucket !== b.nameBucket) return a.nameBucket - b.nameBucket;
+    if (a.s.length !== b.s.length) return a.s.length - b.s.length;
+    const ai = BOOK_INDEX[a.b] ?? 999, bi = BOOK_INDEX[b.b] ?? 999;
+    if (ai !== bi) return ai - bi;
+    if (a.c !== b.c) return a.c - b.c;
+    return a.v - b.v;
+  });
+  return results;
+}
+
+// Highlight just the first and last letters of a verse (for name-verse mode).
+// A "letter" includes its trailing nikud marks so vowels stay attached.
+function highlightEdges(hebrewText) {
+  const isLetter = ch => ch >= "א" && ch <= "ת";
+  // Only nikud (vowel points) count as part of a letter's cluster — NOT the
+  // sof-pasuq (׃) or paseq (׀) punctuation. Cantillation is already stripped.
+  const isMark = ch => /[ְ-ׇּֿׁׂ]/.test(ch);
+  const chars = [...hebrewText];
+  let i = chars.findIndex(isLetter);
+  let j = -1;
+  for (let k = chars.length - 1; k >= 0; k--) { if (isLetter(chars[k])) { j = k; break; } }
+  if (i < 0 || j < 0) return escapeHtml(hebrewText);
+  let iEnd = i + 1; while (iEnd < chars.length && isMark(chars[iEnd])) iEnd++;
+  let jEnd = j + 1; while (jEnd < chars.length && isMark(chars[jEnd])) jEnd++;
+  if (iEnd > j) return escapeHtml(hebrewText);   // clusters overlap (tiny verse)
+  const esc = a => escapeHtml(chars.slice(a[0], a[1]).join(""));
+  return esc([0, i]) +
+    `<mark class="edge">${esc([i, iEnd])}</mark>` +
+    esc([iEnd, j]) +
+    `<mark class="edge">${esc([j, jEnd])}</mark>` +
+    esc([jEnd, chars.length]);
+}
+
+// =============== UI State ===============
+const state = {
+  names: ["", ""],
+  activeIdx: 0,
+  kbVisible: true,
+  searchMode: "root",   // "root" (shoresh) | "rashei" (roshei teivot) | "nameverse" (first & last)
+  filterExact: false,
+  filterTorahOnly: false,
+  filterPsalmsOnly: false,
+  filterStrict: true,
+  results: null,
+  searching: false,
+};
+
+// =============== DOM helpers ===============
+const $ = sel => document.querySelector(sel);
+const fieldsEl = $("#fields");
+const keyboardEl = $("#keyboard");
+const errorEl = $("#error");
+const searchBtn = $("#searchBtn");
+const resultsEl = $("#results");
+const loadingEl = $("#loadingBanner");
+const kbToggle = $("#kbToggle");
+const addBtn = $("#addBtn");
+const filterExactBtn = $("#filterExact");
+const filterStrictBtn = $("#filterStrict");
+const filterTorahBtn = $("#filterTorah");
+const filterPsalmsBtn = $("#filterPsalms");
+const nameLabel = $(".search-card .label");
+const modeToggle = $("#modeToggle");
+const modeDesc = $("#modeDesc");
+
+const MODE_DESC = {
+  root: "Finds verses whose words share a root (shoresh) with your Hebrew name(s).",
+  rashei: "Finds verses whose consecutive words' initial letters (roshei teivot) spell your name(s) — each name and word searched in turn. Verses spelling them in the name's own order rise to the top.",
+  nameverse: "Finds verses that begin with your name's first letter and end with its last letter — the traditional verse for a person's name.",
+};
+
+// Single-name modes (first & last letter) show only the first field and hide
+// the "add another name" affordance; root (shoresh) and roshei teivot allow many.
+const SINGLE_NAME_MODES = new Set(["nameverse"]);
+function applyModeToFields() {
+  const single = SINGLE_NAME_MODES.has(state.searchMode);
+  addBtn.style.display = single ? "none" : "block";
+  fieldsEl.querySelectorAll(".field-row").forEach((row, i) => {
+    row.style.display = (single && i > 0) ? "none" : "";
+  });
+  if (nameLabel) nameLabel.textContent = single ? "Enter your Hebrew name" : "Enter your Hebrew name(s)";
+}
+
+// Switch search type. Root-only filters are hidden outside shoresh mode, the
+// field count collapses to one for single-name modes, and the description
+// updates. Re-runs the search if results are already showing.
+function setMode(mode) {
+  state.searchMode = mode;
+  modeToggle.querySelectorAll(".mode-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.mode === mode));
+  modeDesc.textContent = MODE_DESC[mode] || "";
+  document.querySelectorAll(".filters .root-only").forEach(el => {
+    el.style.display = (mode === "root") ? "" : "none";
+  });
+  if (SINGLE_NAME_MODES.has(mode)) { state.activeIdx = 0; updateActiveMarkers(); }
+  applyModeToFields();
+  if (state.results !== null) performSearch();
+}
+
+// Build the field rows once. After that, only update what changed (active marker,
+// row count) — never replace the input elements themselves, since that destroys
+// focus and breaks typing (including IME input from the OS-level Hebrew keyboard).
+function buildFields() {
+  fieldsEl.innerHTML = "";
+  state.names.forEach((val, i) => buildOneField(i, val));
+  applyModeToFields();
+}
+
+function buildOneField(i, val) {
+  const row = document.createElement("div");
+  row.className = "field-row";
+  row.dataset.idx = i;
+  const wrap = document.createElement("div");
+  wrap.className = "field-wrap";
+  const arrow = document.createElement("span");
+  arrow.className = "arrow";
+  arrow.textContent = "▸";
+  arrow.style.display = (state.activeIdx === i && state.kbVisible) ? "" : "none";
+  wrap.appendChild(arrow);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "name-field" + (state.activeIdx === i ? " active" : "") +
+    (state.activeIdx === i && state.kbVisible ? " with-arrow" : "");
+  input.dir = "rtl";
+  input.placeholder = `Name ${i + 1}`;
+  input.value = val;
+  // Update state on every input event from any source (typing, paste, IME, on-screen kb)
+  input.addEventListener("input", e => { state.names[i] = e.target.value; });
+  // Just track which field is active — DO NOT re-render here (would steal focus)
+  input.addEventListener("focus", () => {
+    state.activeIdx = i;
+    updateActiveMarkers();
+  });
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") performSearch();
+  });
+  wrap.appendChild(input);
+  row.appendChild(wrap);
+
+  // Remove button (only when there's more than one field)
+  if (state.names.length > 1) {
+    const rm = document.createElement("button");
+    rm.className = "remove-btn";
+    rm.type = "button";
+    rm.textContent = "×";
+    rm.addEventListener("click", () => removeField(i));
+    row.appendChild(rm);
+  }
+
+  fieldsEl.appendChild(row);
+}
+
+// Update only the active-state visuals (arrow + border) without rebuilding inputs.
+function updateActiveMarkers() {
+  const rows = fieldsEl.querySelectorAll(".field-row");
+  rows.forEach((row, i) => {
+    const arrow = row.querySelector(".arrow");
+    const input = row.querySelector("input.name-field");
+    const isActive = state.activeIdx === i;
+    if (arrow) arrow.style.display = (isActive && state.kbVisible) ? "" : "none";
+    if (input) {
+      input.classList.toggle("active", isActive);
+      input.classList.toggle("with-arrow", isActive && state.kbVisible);
+    }
+  });
+}
+
+function removeField(i) {
+  state.names.splice(i, 1);
+  if (state.activeIdx >= state.names.length) state.activeIdx = state.names.length - 1;
+  if (state.activeIdx < 0) state.activeIdx = 0;
+  buildFields();
+}
+
+function addField() {
+  state.names.push("");
+  buildFields();
+  // Focus the new field
+  const inputs = fieldsEl.querySelectorAll("input.name-field");
+  const last = inputs[inputs.length - 1];
+  if (last) {
+    state.activeIdx = state.names.length - 1;
+    last.focus();
+    updateActiveMarkers();
+  }
+}
+
+// Push state values back into existing inputs (used when on-screen kb modifies state)
+function syncFieldsFromState() {
+  const inputs = fieldsEl.querySelectorAll("input.name-field");
+  inputs.forEach((input, i) => {
+    if (input.value !== state.names[i]) input.value = state.names[i] || "";
+  });
+}
+
+// Helper used by the on-screen keyboard to add text to the active field
+// without losing focus or destroying the input element.
+function onScreenKeyType(text) {
+  state.names[state.activeIdx] = (state.names[state.activeIdx] || "") + text;
+  syncFieldsFromState();
+  // Refocus the active input so the visual caret stays in place
+  const inputs = fieldsEl.querySelectorAll("input.name-field");
+  if (inputs[state.activeIdx]) {
+    inputs[state.activeIdx].focus();
+    const v = state.names[state.activeIdx];
+    inputs[state.activeIdx].setSelectionRange(v.length, v.length);
+  }
+}
+
+function onScreenBackspace() {
+  state.names[state.activeIdx] = (state.names[state.activeIdx] || "").slice(0, -1);
+  syncFieldsFromState();
+  const inputs = fieldsEl.querySelectorAll("input.name-field");
+  if (inputs[state.activeIdx]) inputs[state.activeIdx].focus();
+}
+
+function onScreenClear() {
+  state.names[state.activeIdx] = "";
+  syncFieldsFromState();
+  const inputs = fieldsEl.querySelectorAll("input.name-field");
+  if (inputs[state.activeIdx]) inputs[state.activeIdx].focus();
+}
+
+function renderKeyboard() {
+  if (!state.kbVisible) {
+    keyboardEl.innerHTML = "";
+    kbToggle.textContent = "reveal";
+    return;
+  }
+  kbToggle.textContent = "hide";
+  const rows = [
+    ["א","ב","ג","ד","ה","ו","ז"],
+    ["ח","ט","י","כ","ך","ל","מ"],
+    ["ם","נ","ן","ס","ע","פ","ף"],
+    ["צ","ץ","ק","ר","ש","ת"],
+  ];
+  keyboardEl.innerHTML = "";
+  keyboardEl.className = "keyboard";
+  rows.forEach(row => {
+    const rowEl = document.createElement("div");
+    rowEl.className = "row";
+    rowEl.style.gridTemplateColumns = `repeat(${row.length}, 1fr)`;
+    row.forEach(letter => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = letter;
+      // mousedown + preventDefault keeps the input from losing focus
+      btn.addEventListener("mousedown", e => e.preventDefault());
+      btn.addEventListener("click", () => onScreenKeyType(letter));
+      rowEl.appendChild(btn);
+    });
+    keyboardEl.appendChild(rowEl);
+  });
+  const ctrl = document.createElement("div");
+  ctrl.className = "ctrl-row";
+  const bs = document.createElement("button");
+  bs.type = "button";
+  bs.className = "bs";
+  bs.textContent = "⌫";
+  bs.addEventListener("mousedown", e => e.preventDefault());
+  bs.addEventListener("click", onScreenBackspace);
+  const space = document.createElement("button");
+  space.type = "button";
+  space.textContent = "space";
+  space.addEventListener("mousedown", e => e.preventDefault());
+  space.addEventListener("click", () => onScreenKeyType(" "));
+  const clr = document.createElement("button");
+  clr.type = "button";
+  clr.textContent = "clear";
+  clr.addEventListener("mousedown", e => e.preventDefault());
+  clr.addEventListener("click", onScreenClear);
+  ctrl.append(bs, space, clr);
+  keyboardEl.appendChild(ctrl);
+}
+
+function renderToggle(btn, on) {
+  if (on) btn.classList.add("on");
+  else btn.classList.remove("on");
+}
+
+function highlightVerse(hebrewText, roots, allowedForms, wordLemma) {
+  // Highlight words whose stripped form genuinely shares a root with one of
+  // `roots`, using strict morphological matching. A word is NOT highlighted if
+  // it's some other proper name, or if its dictionary lemma is unrelated to the
+  // root (both mirror the exclusions in doSearch), so highlights line up with
+  // why the verse actually matched. `allowedForms` is the set of the searched
+  // names' own forms; `wordLemma` maps a stripped word to its lemma skeleton(s).
+  const wordMatches = sw => {
+    if (sw.length <= 1) return false;
+    const pn = properNounForm(sw);
+    if (pn !== null && !allowedForms.has(pn)) return false;
+    const lemmaStr = wordLemma ? (wordLemma.get(sw) || "") : "";
+    return roots.some(r => matchesRootStrict(sw, r) && lemmaOk(sw, r, lemmaStr));
+  };
+  const tokens = hebrewText.split(/(\s+)/);
+  return tokens.map(tok => {
+    if (!tok.trim()) return tok;
+    const safe = tok.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // strip() may split a maqaf-joined display token (בני־שעיר) into sub-words;
+    // highlight the whole token if any sub-word is a genuine match.
+    const hit = strip(tok).split(/\s+/).filter(Boolean).some(wordMatches);
+    return hit ? `<mark>${safe}</mark>` : safe;
+  }).join("");
+}
+
+function renderResults() {
+  if (state.results === null) {
+    resultsEl.style.display = "none";
+    return;
+  }
+  resultsEl.style.display = "";
+  const filled = state.names.map(s => s.trim()).filter(Boolean);
+  if (state.results.length === 0) {
+    resultsEl.innerHTML = `
+      <div class="results-meta">
+        <span class="count">No verses found</span>
+        <span class="for">for: ${filled.join(" · ")}</span>
+      </div>
+      <div class="no-results">Try adjusting filters or check the spelling of the name.</div>
+    `;
+    return;
+  }
+  const allRoots = filled.flatMap(n => getRoots(n));
+  // The searched names' own forms (each compound part), which remain
+  // highlightable even though they may themselves be proper nouns.
+  const allowedForms = new Set(filled.flatMap(n => strip(n).split(/\s+/).filter(Boolean)));
+  // For roshei-teivot mode: every word of every name field (in order), used to
+  // mark the acrostic run(s).
+  const rasheiTargets = state.searchMode === "rashei"
+    ? filled.flatMap(n => strip(n).split(/\s+/)).filter(Boolean) : [];
+  const items = state.results.map(r => {
+    // Keep nikud, drop cantillation (ta'amim) for display.
+    const cleanedHebrew = stripCantillation(cleanHebrewAtDisplay(r.h));
+    // Map each stripped word in this verse to its lemma skeleton(s), so the
+    // highlighter can apply the same lemma filter the search used.
+    let wordLemma = null;
+    if (r.l) {
+      wordLemma = new Map();
+      r.s.split(/\s+/).forEach((w, i) => { if (r.l[i]) wordLemma.set(w, r.l[i]); });
+    }
+    const hebHtml = r.rashei
+      ? highlightAcrostic(cleanedHebrew, rasheiTargets)     // mark the acrostic run
+      : r.nameVerse
+        ? highlightEdges(cleanedHebrew)                     // mark first & last letter
+        : highlightVerse(cleanedHebrew, allRoots, allowedForms, wordLemma);
+    const cleanedEnglish = cleanEnglishAtDisplay(r.e || "");
+    const englishHtml = cleanedEnglish ? `<div class="english">${escapeHtml(cleanedEnglish)}</div>` : "";
+    const hebRefStr = hebRef(r.b, r.c, r.v);
+    const sefariaRef = r.r.replace(/ /g, "_");
+    // Badge text. Roshei-teivot grades the match:
+    //   forward contiguous → "Name in order"; reverse → "Name in reverse order";
+    //   any other contiguous order, or all names present but spaced apart →
+    //   "All names present"; only some of several names found → "One Name in
+    //   Order". (A single name always reads forward, so it gets "Name in order".)
+    // The other modes just flag when every name field matched.
+    let badgeText = "";
+    if (r.rashei) {
+      badgeText = r.status === "forward" ? "Name in order"
+        : r.status === "reverse" ? "Name in reverse order"
+        : r.status === "other" ? "All names present"
+        : r.allMatched ? "All names present"
+        : r.multi ? "One Name in Order" : "";
+    } else if (r.allMatched && r.multi) {
+      badgeText = "All names present";
+    }
+    // A "partial" roshei match (only one of several names, badged "One Name in
+    // Order") stays understated: it gets the badge but not the warm tint, and a
+    // lighter highlight — so full-name matches stand out.
+    const isPartial = r.rashei && !r.status && !r.allMatched;
+    const cardClass = [
+      badgeText ? "badged" : "",
+      (badgeText && !isPartial) ? "all-match" : "",
+      isPartial ? "partial-match" : "",
+    ].filter(Boolean).join(" ");
+    const badge = badgeText ? `<div class="badge">${badgeText}</div>` : "";
+    const pills = r.matchedNames.map(n =>
+      `<span class="name-pill">${escapeHtml(n)}</span>`
+    ).join("");
+    // Flags crediting any published list that picks this verse for the name.
+    const flags = (r.sources || []).map(src =>
+      `<span class="source-flag"><span class="pennant">⚑</span>${escapeHtml(src)}</span>`
+    ).join("");
+    return `
+      <div class="verse-card ${cardClass}" data-ref="${escapeHtml(r.r)}">
+        ${badge}
+        <div class="hebrew">${hebHtml}</div>
+        ${englishHtml}
+        <div class="footer">
+          <div class="refs">
+            <span class="ref-he">${escapeHtml(hebRefStr)}</span>
+            <span class="ref-en">· ${escapeHtml(r.r)}</span>
+          </div>
+          <div class="actions">
+            ${flags}
+            ${pills}
+            <button type="button" class="commission-btn" data-act="commission">Illustrate This Verse</button>
+            <a class="sefaria-link" target="_blank" rel="noopener"
+               href="https://www.sefaria.org/${sefariaRef}">view on Sefaria →</a>
+          </div>
+        </div>
+        <div class="commission-form" hidden>
+          <div class="cf-title">Illustrate this verse!</div>
+          <p class="cf-sub">Reach out to Josh from Deep Well Scribal to inquire about crafting original, hand-made art for your name/verse. No obligation. Just submit your info to start the conversation, and Josh will be in touch!</p>
+          <input class="cf-input" data-f="name" type="text" placeholder="Your name" autocomplete="name">
+          <input class="cf-input" data-f="email" type="email" placeholder="Email" autocomplete="email">
+          <textarea class="cf-input" data-f="message" placeholder="Anything you have in mind? (optional)"></textarea>
+          <div class="cf-row">
+            <button type="button" class="cf-send" data-act="commission-send">Send inquiry</button>
+            <button type="button" class="cf-cancel" data-act="commission-cancel">Cancel</button>
+          </div>
+          <div class="cf-status" hidden></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+  resultsEl.innerHTML = `
+    <div class="results-meta">
+      <span class="count">${state.results.length} verse${state.results.length !== 1 ? "s" : ""} found</span>
+      <span class="for">for: ${escapeHtml(filled.join(" · "))}</span>
+    </div>
+    <div class="results-list">${items}</div>
+  `;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// =============== Commission inquiry ("Illustrate This Verse") ===============
+// Opens the inline form on a card, closing any other that's open.
+function openCommissionForm(card) {
+  resultsEl.querySelectorAll(".verse-card").forEach(c => {
+    if (c !== card) closeCommissionForm(c);
+  });
+  const form = card.querySelector(".commission-form");
+  const btn = card.querySelector(".commission-btn");
+  const opening = form.hidden;
+  form.hidden = !opening;
+  if (btn) btn.classList.toggle("open", opening);
+  if (opening) {
+    const first = form.querySelector('[data-f="name"]');
+    if (first) first.focus();
+  }
+}
+
+function closeCommissionForm(card) {
+  const form = card.querySelector(".commission-form");
+  if (form) form.hidden = true;
+  const btn = card.querySelector(".commission-btn");
+  if (btn) btn.classList.remove("open");
+}
+
+// Send a commission inquiry — via the configured form endpoint if set, else a
+// pre-filled mailto: draft to COMMISSION.email. The verse (reference + Hebrew +
+// English) is attached automatically.
+function submitCommission(card) {
+  const form = card.querySelector(".commission-form");
+  const statusEl = form.querySelector(".cf-status");
+  const sendBtn = form.querySelector(".cf-send");
+  const val = f => (form.querySelector(`[data-f="${f}"]`)?.value || "").trim();
+  const setStatus = (msg, cls) => {
+    statusEl.textContent = msg;
+    statusEl.className = "cf-status " + (cls || "");
+    statusEl.hidden = false;
+  };
+  const name = val("name"), email = val("email"), message = val("message");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    setStatus("Please enter a valid email so we can reach you.", "err");
+    return;
+  }
+  const ref = card.dataset.ref || "";
+  const hebrew = (card.querySelector(".hebrew")?.textContent || "").trim();
+  const english = (card.querySelector(".english")?.textContent || "").trim();
+  const subject = `Verse commission inquiry — ${ref}`;
+
+  if (COMMISSION.endpoint) {
+    sendBtn.disabled = true;
+    setStatus("Sending…", "");
+    fetch(COMMISSION.endpoint, {
+      method: "POST",
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, message, verse: ref, hebrew, english, _subject: subject }),
+    }).then(r => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      form.querySelectorAll(".cf-input").forEach(i => (i.value = ""));
+      sendBtn.disabled = false;
+      setStatus("Thank you — your inquiry is on its way. We'll be in touch soon.", "ok");
+    }).catch(() => {
+      sendBtn.disabled = false;
+      setStatus("Sorry, something went wrong — please try again in a moment"
+        + (COMMISSION.email ? `, or email ${COMMISSION.email} directly.` : "."), "err");
+    });
+    return;
+  }
+
+  // mailto fallback
+  const body = [
+    `Name: ${name}`,
+    `Email: ${email}`,
+    "",
+    `Verse: ${ref}`,
+    hebrew,
+    english,
+    "",
+    "What I have in mind:",
+    message || "(—)",
+    "",
+    "— Sent from Seek Your Name (שורשם) · deepwell.studio",
+  ].join("\n");
+  window.location.href = `mailto:${COMMISSION.email}`
+    + `?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  setStatus(`Opening your email app addressed to ${COMMISSION.email}. If nothing happens, please write to us there directly.`, "ok");
+}
+
+function showError(msg) {
+  if (msg) {
+    errorEl.textContent = msg;
+    errorEl.style.display = "";
+  } else {
+    errorEl.style.display = "none";
+  }
+}
+
+let searchingInterval = null;
+
+function setSearchingState(on) {
+  state.searching = on;
+  if (on) {
+    searchBtn.disabled = true;
+    let dots = 0;
+    const update = () => {
+      dots = (dots + 1) % 4;
+      searchBtn.textContent = "Searching" + ".".repeat(dots);
+    };
+    update();
+    searchingInterval = setInterval(update, 350);
+  } else {
+    if (searchingInterval) {
+      clearInterval(searchingInterval);
+      searchingInterval = null;
+    }
+    searchBtn.disabled = false;
+    searchBtn.textContent = "Search";
+  }
+}
+
+function performSearch() {
+  let filled = state.names.map(s => s.trim()).filter(Boolean);
+  if (!filled.length) {
+    showError("Please enter at least one Hebrew name.");
+    return;
+  }
+  if (!TANAKH) {
+    showError("Tanakh is still loading — please wait a moment.");
+    return;
+  }
+  // Roshei-teivot and first-&-last modes are single-name: use only the first.
+  if (SINGLE_NAME_MODES.has(state.searchMode)) filled = filled.slice(0, 1);
+  showError(null);
+  setSearchingState(true);
+
+  // Defer the search so the button gets a chance to paint its new state
+  // before the synchronous search blocks the main thread.
+  setTimeout(() => {
+    try {
+      const scope = {
+        filterTorahOnly: state.filterTorahOnly,
+        filterPsalmsOnly: state.filterPsalmsOnly,
+      };
+      state.results = state.searchMode === "nameverse"
+        ? doNameVerseSearch(filled, scope)
+        : state.searchMode === "rashei"
+          ? doRosheiTeivotSearch(filled, scope)
+          : doSearch(filled, {
+              ...scope,
+              filterExact: state.filterExact,
+              filterStrict: state.filterStrict,
+            });
+      renderResults();
+      resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (e) {
+      console.error(e);
+      showError("Error: " + (e && e.message ? e.message : String(e)));
+    } finally {
+      setSearchingState(false);
+    }
+  }, 20);
+}
+
+// =============== Event wiring ===============
+addBtn.addEventListener("click", addField);
+
+kbToggle.addEventListener("click", () => {
+  state.kbVisible = !state.kbVisible;
+  updateActiveMarkers();
+  renderKeyboard();
+});
+
+filterPsalmsBtn.addEventListener("click", () => {
+  state.filterPsalmsOnly = !state.filterPsalmsOnly;
+  renderToggle(filterPsalmsBtn, state.filterPsalmsOnly);
+  if (state.results !== null) performSearch();
+});
+
+filterExactBtn.addEventListener("click", () => {
+  state.filterExact = !state.filterExact;
+  renderToggle(filterExactBtn, state.filterExact);
+  if (state.results !== null) performSearch();
+});
+
+filterStrictBtn.addEventListener("click", () => {
+  state.filterStrict = !state.filterStrict;
+  renderToggle(filterStrictBtn, state.filterStrict);
+  if (state.results !== null) performSearch();
+});
+
+filterTorahBtn.addEventListener("click", () => {
+  state.filterTorahOnly = !state.filterTorahOnly;
+  renderToggle(filterTorahBtn, state.filterTorahOnly);
+  if (state.results !== null) performSearch();
+});
+
+searchBtn.addEventListener("click", performSearch);
+
+modeToggle.querySelectorAll(".mode-btn").forEach(b =>
+  b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+// Delegated handler for the per-verse "Illustrate This Verse" buttons/form. One
+// listener on the results container survives every re-render of the cards.
+resultsEl.addEventListener("click", e => {
+  const actEl = e.target.closest("[data-act]");
+  if (!actEl || !resultsEl.contains(actEl)) return;
+  const card = actEl.closest(".verse-card");
+  if (!card) return;
+  if (actEl.dataset.act === "commission") openCommissionForm(card);
+  else if (actEl.dataset.act === "commission-cancel") closeCommissionForm(card);
+  else if (actEl.dataset.act === "commission-send") submitCommission(card);
+});
+
+// =============== Load Tanakh data ===============
+async function loadTanakh() {
+  try {
+    const resp = await fetch("tanakh.json");
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    // Current shape is { verses, properNouns }; tolerate a bare array from an
+    // older build (proper-noun filtering simply stays off in that case).
+    TANAKH = Array.isArray(data) ? data : (data.verses || []);
+    PROPER_NOUNS = new Set(Array.isArray(data) ? [] : (data.properNouns || []));
+    loadingEl.style.display = "none";
+    searchBtn.disabled = false;
+    searchBtn.textContent = "Search";
+  } catch (e) {
+    LOADING_ERROR = e.message;
+    loadingEl.textContent = `Could not load the Tanakh: ${e.message}. Make sure tanakh.json is in the same folder as this page.`;
+    loadingEl.style.color = "#7a2020";
+    loadingEl.style.fontStyle = "normal";
+  }
+}
+
+// Initial render
+buildFields();
+renderKeyboard();
+setMode("root");   // sets the description + filter visibility for the default mode
+loadTanakh();
+</script>
+
+</body>
+</html>
