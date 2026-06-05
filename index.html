@@ -250,6 +250,30 @@
     line-height: 1.5;
     margin: 0 0 1.1rem;
   }
+  /* On narrow screens, "First & Last Letter" shortens to "First & Last". */
+  @media (max-width: 600px) {
+    .mode-btn .tab-extra { display: none; }
+  }
+  /* Mode-specific hint (e.g. Gematria), sits under the description note. */
+  .mode-hint {
+    font-size: 0.72rem;
+    color: #6b5030;
+    line-height: 1.55;
+    background: var(--warm-tint-strong);
+    border-left: 2px solid var(--rul-strong);
+    padding: 0.5rem 0.7rem;
+    border-radius: 2px;
+    margin: -0.5rem 0 1.1rem;
+  }
+  .mode-hint .hint-label {
+    font-family: var(--F-head);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.62rem;
+    color: var(--sep);
+    margin-right: 0.3rem;
+  }
   .verse-card .lead-letters {
     font-family: var(--F-head);
     font-weight: 500;
@@ -802,7 +826,7 @@
     <blockquote><a href="https://www.chabad.org/library/article_cdo/aid/2451435/jewish/Names-Verses-and-Flaming-Hot-Rods.htm" target="_blank" rel="noopener">The Rebbe Rashab taught</a>: “through the letters of the ‘verses of the names,’ one merits that he is allowed to stand near the open doors and see what transpires in the Heavenly chambers.”</blockquote>
     <details class="intro-more">
       <summary>More about this tool</summary>
-      <p>With this search tool, you can find a verse for your name that follows the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the roshei teivot (initial letters) of your name, or go deeper and discover the meaning(s) of your name embedded in the Hebrew shoreshim (word roots) of the text itself.</p>
+      <p>With this search tool, you can find a verse for your name that follows the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the roshei teivot (initial letters) of your name, illuminate connections via Gematria (numerology), or go deeper and discover the meaning(s) of your name embedded in the Hebrew shoreshim (word roots) of the text itself.</p>
       <p class="intro-note"><span class="note-label">Note</span> This tool was made with the help of Claude Code and is in ongoing development. If you notice mistakes or have ideas for improving or expanding the search function, reach out to <a href="mailto:josh@deepwell.studio">josh@deepwell.studio</a>. And if you find a verse for your name that you love and want to commission original artwork — to strengthen this practice and further illuminate this knowledge of self — click the “Illustrate This Verse” button and send a message to Josh, the scribe-in-residence at Deep Well.</p>
     </details>
   </div>
@@ -818,10 +842,14 @@
         <span class="mode-he">ראשי תבות</span><span class="mode-en">Acrostic</span>
       </button>
       <button type="button" class="mode-btn" data-mode="nameverse">
-        <span class="mode-he">ראשון ואחרון</span><span class="mode-en">First &amp; Last Letter</span>
+        <span class="mode-he">ראשון ואחרון</span><span class="mode-en">First &amp; Last<span class="tab-extra"> Letter</span></span>
+      </button>
+      <button type="button" class="mode-btn" data-mode="gematria">
+        <span class="mode-he">גימטריה</span><span class="mode-en">Gematria</span>
       </button>
     </div>
     <p class="mode-desc" id="modeDesc">Find verses in Tanakh connected with your name(s).</p>
+    <p class="mode-hint" id="gematriaHint" hidden><span class="hint-label">Hint</span>Each name field counts as a single value. Type a full multi-word name into one field to match the whole name.</p>
     <div class="label">Enter your Hebrew name(s)</div>
     <div id="fields"></div>
     <button class="add-btn" id="addBtn">+ Add another name</button>
@@ -835,6 +863,10 @@
       <button class="toggle on root-only" id="filterStrict" type="button">
         <span class="switch"><span class="knob"></span></span>
         <span class="text">Significant matches only (recommended)</span>
+      </button>
+      <button class="toggle gematria-only" id="filterGadol" type="button">
+        <span class="switch"><span class="knob"></span></span>
+        <span class="text">Mispar gadol (final letters count 500–900)</span>
       </button>
       <button class="toggle root-only" id="filterExact" type="button">
         <span class="switch"><span class="knob"></span></span>
@@ -1970,6 +2002,150 @@ function highlightEdges(hebrewText) {
     esc([jEnd, chars.length]);
 }
 
+// =============== Gematria search ===============
+// Each Hebrew letter has a numeric value. Standard (default) treats final letters
+// as their base letter (ך=20, ם=40, ן=50, ף=80, ץ=90). "Mispar gadol" gives the
+// finals their large values (500/600/700/800/900). A name's value is the sum of
+// its letters; a verse matches when a single WORD, a PHRASE (run of consecutive
+// words), or the WHOLE VERSE sums to that value. Whole-verse matches are badged
+// and floated to the top.
+const GEMATRIA_BASE = {
+  "א":1,"ב":2,"ג":3,"ד":4,"ה":5,"ו":6,"ז":7,"ח":8,"ט":9,
+  "י":10,"כ":20,"ך":20,"ל":30,"מ":40,"ם":40,"נ":50,"ן":50,
+  "ס":60,"ע":70,"פ":80,"ף":80,"צ":90,"ץ":90,
+  "ק":100,"ר":200,"ש":300,"ת":400,
+};
+const GEMATRIA_GADOL = { ...GEMATRIA_BASE, "ך":500,"ם":600,"ן":700,"ף":800,"ץ":900 };
+
+// Sum the gematria of a string's Hebrew letters (final forms preserved — do NOT
+// normalize before calling). Non-letters (nikud, spaces, punctuation) are ignored.
+function gematriaOf(text, gadol) {
+  const map = gadol ? GEMATRIA_GADOL : GEMATRIA_BASE;
+  let sum = 0;
+  for (const ch of text) sum += map[ch] || 0;
+  return sum;
+}
+
+// Split display/raw Hebrew into word tokens (maqaf and whitespace are breaks),
+// returning the consonants-only form of each word (final letters kept).
+function gematriaWords(hebrew) {
+  return hebrew
+    .replace(DASH_RE, " ")
+    .split(/\s+/)
+    .map(w => (w.match(/[א-ת]/g) || []).join(""))
+    .filter(Boolean);
+}
+
+// Within value-array `vals` (all positive), collect every contiguous window whose
+// sum equals `target`, as [startIndex, length] pairs (two-pointer, O(n)).
+function sumWindows(vals, target) {
+  const out = [];
+  let lo = 0, run = 0;
+  for (let hi = 0; hi < vals.length; hi++) {
+    run += vals[hi];
+    while (run > target && lo <= hi) { run -= vals[lo]; lo++; }
+    if (run === target && target > 0) out.push([lo, hi - lo + 1]);
+  }
+  return out;
+}
+
+function doGematriaSearch(names, opts = {}) {
+  if (!TANAKH) return [];
+  const { filterTorahOnly = false, filterPsalmsOnly = false,
+          filterExactReveal = false, gematriaGadol = false } = opts;
+  // One target value per name field — the sum of its letters as typed. We keep
+  // final letters as entered (strip() normalizes finals, which would break
+  // mispar gadol), taking only the Hebrew letters.
+  const specs = names.map(n => {
+    const letters = (n.match(/[א-ת]/g) || []).join("");
+    return letters ? { name: n, value: gematriaOf(letters, gematriaGadol) } : null;
+  }).filter(Boolean);
+  if (!specs.length) return [];
+  const multi = specs.length > 1;
+
+  const results = [];
+  for (const verse of TANAKH) {
+    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
+    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    const words = gematriaWords(verse.h);
+    if (!words.length) continue;
+    const vals = words.map(w => gematriaOf(w, gematriaGadol));
+    const total = vals.reduce((a, b) => a + b, 0);
+
+    const matchedNames = [];
+    let bestKind = 0;                 // 1 word, 2 phrase, 3 whole-verse (highest)
+    const wholeNames = [];
+    for (const sp of specs) {
+      const windows = sumWindows(vals, sp.value);
+      const whole = total === sp.value;
+      if (!windows.length && !whole) continue;
+      matchedNames.push(sp.name);
+      if (whole) { wholeNames.push(sp.name); bestKind = Math.max(bestKind, 3); }
+      else if (windows.some(w => w[1] >= 2)) bestKind = Math.max(bestKind, 2);
+      else bestKind = Math.max(bestKind, 1);
+    }
+    if (!matchedNames.length) continue;
+
+    const exactNames = exactNamesInVerse(verse.s, names);
+    results.push({
+      ...verse,
+      matchedNames,
+      allMatched: matchedNames.length === specs.length,
+      multi,
+      gematria: true,
+      gematriaGadol,
+      verseTotal: total,
+      wholeNames,                     // names whose value == whole-verse total
+      bestKind,                       // for ranking within non-whole matches
+      exactNames,
+      exactCount: exactNames.length,
+    });
+  }
+  results.sort((a, b) => {
+    if (filterExactReveal && a.exactCount !== b.exactCount) return b.exactCount - a.exactCount;
+    // Whole-verse equivalences first.
+    const aw = a.wholeNames.length > 0, bw = b.wholeNames.length > 0;
+    if (aw !== bw) return aw ? -1 : 1;
+    if (a.allMatched !== b.allMatched) return a.allMatched ? -1 : 1;
+    if (a.matchedNames.length !== b.matchedNames.length) return b.matchedNames.length - a.matchedNames.length;
+    if (a.bestKind !== b.bestKind) return b.bestKind - a.bestKind;   // word/phrase quality
+    if (a.s.length !== b.s.length) return a.s.length - b.s.length;   // shorter = tighter
+    const ai = BOOK_INDEX[a.b] ?? 999, bi = BOOK_INDEX[b.b] ?? 999;
+    if (ai !== bi) return ai - bi;
+    if (a.c !== b.c) return a.c - b.c;
+    return a.v - b.v;
+  });
+  return results;
+}
+
+// Highlight, in the display Hebrew, the word(s) and phrase(s) whose gematria
+// equals any of the name values. Whole-verse matches aren't word-highlighted
+// (the badge conveys them). Single words and phrase-runs are marked.
+function highlightGematria(displayHebrew, values, gadol) {
+  const tokens = displayHebrew.split(/(\s+|[־׀׃]+)/);
+  const isSep = tok => tok === "" || /^(\s|[־׀׃])+$/.test(tok);
+  const wordPos = [];                 // token index per content word, with value
+  tokens.forEach((tok, ti) => {
+    if (!isSep(tok)) {
+      const cons = (tok.match(/[א-ת]/g) || []).join("");
+      wordPos.push({ ti, val: gematriaOf(cons, gadol) });
+    }
+  });
+  const vals = wordPos.map(w => w.val);
+  const total = vals.reduce((a, b) => a + b, 0);
+  const mark = new Set();
+  for (const target of values) {
+    if (total === target) continue;   // whole-verse match → badge, don't blanket-highlight
+    for (const [start, len] of sumWindows(vals, target)) {
+      if (len >= wordPos.length) continue;   // spans whole verse → treat as whole, skip
+      for (let i = 0; i < len; i++) mark.add(wordPos[start + i].ti);
+    }
+  }
+  return tokens.map((tok, ti) =>
+    mark.has(ti) ? `<mark>${escapeHtml(tok)}</mark>` : escapeHtml(tok)
+  ).join("");
+}
+
 // =============== UI State ===============
 const state = {
   names: ["", ""],
@@ -1981,6 +2157,7 @@ const state = {
   filterTorahOnly: false,
   filterPsalmsOnly: false,
   filterStrict: true,
+  gematriaGadol: false,
   results: null,
   searching: false,
 };
@@ -2000,9 +2177,11 @@ const filterExactRevealBtn = $("#filterExactReveal");
 const filterStrictBtn = $("#filterStrict");
 const filterTorahBtn = $("#filterTorah");
 const filterPsalmsBtn = $("#filterPsalms");
+const filterGadolBtn = $("#filterGadol");
 const nameLabel = $(".search-card .label");
 const modeToggle = $("#modeToggle");
 const modeDesc = $("#modeDesc");
+const gematriaHint = $("#gematriaHint");
 
 // Single-name modes (first & last letter) show only the first field and hide
 // the "add another name" affordance; root (shoresh) and roshei teivot allow many.
@@ -2028,6 +2207,10 @@ function setMode(mode) {
   document.querySelectorAll(".filters .root-only").forEach(el => {
     el.style.display = (mode === "root") ? "" : "none";
   });
+  document.querySelectorAll(".filters .gematria-only").forEach(el => {
+    el.style.display = (mode === "gematria") ? "" : "none";
+  });
+  if (gematriaHint) gematriaHint.hidden = (mode !== "gematria");
   if (SINGLE_NAME_MODES.has(mode)) { state.activeIdx = 0; updateActiveMarkers(); }
   applyModeToFields();
   if (state.results !== null) performSearch();
@@ -2266,6 +2449,12 @@ function renderResults() {
   // mark the acrostic run(s).
   const rasheiTargets = state.searchMode === "rashei"
     ? filled.flatMap(n => strip(n).split(/\s+/)).filter(Boolean) : [];
+  // For gematria mode: each name's value (as typed, finals preserved), used to
+  // mark equal words/phrases and to label the pills.
+  const gematriaSpecs = state.searchMode === "gematria"
+    ? filled.map(n => ({ name: n, value: gematriaOf((n.match(/[א-ת]/g) || []).join(""), state.gematriaGadol) }))
+        .filter(s => s.value > 0)
+    : [];
   const items = state.results.map(r => {
     // Keep nikud, drop cantillation (ta'amim) for display.
     const cleanedHebrew = stripCantillation(cleanHebrewAtDisplay(r.h));
@@ -2276,11 +2465,13 @@ function renderResults() {
       wordLemma = new Map();
       r.s.split(/\s+/).forEach((w, i) => { if (r.l[i]) wordLemma.set(w, r.l[i]); });
     }
-    const hebHtml = r.rashei
-      ? highlightAcrostic(cleanedHebrew, rasheiTargets)     // mark the acrostic run
-      : r.nameVerse
-        ? highlightEdges(cleanedHebrew)                     // mark first & last letter
-        : highlightVerse(cleanedHebrew, allRoots, allowedForms, wordLemma);
+    const hebHtml = r.gematria
+      ? highlightGematria(cleanedHebrew, gematriaSpecs.map(s => s.value), r.gematriaGadol)
+      : r.rashei
+        ? highlightAcrostic(cleanedHebrew, rasheiTargets)   // mark the acrostic run
+        : r.nameVerse
+          ? highlightEdges(cleanedHebrew)                   // mark first & last letter
+          : highlightVerse(cleanedHebrew, allRoots, allowedForms, wordLemma);
     const cleanedEnglish = cleanEnglishAtDisplay(r.e || "");
     const englishHtml = cleanedEnglish ? `<div class="english">${escapeHtml(cleanedEnglish)}</div>` : "";
     const hebRefStr = hebRef(r.b, r.c, r.v);
@@ -2292,7 +2483,11 @@ function renderResults() {
     //   Order". (A single name always reads forward, so it gets "Name in order".)
     // The other modes just flag when every name field matched.
     let badgeText = "";
-    if (r.rashei) {
+    if (r.gematria) {
+      // Whole-verse equivalence is the special, top-tier gematria match.
+      if (r.wholeNames && r.wholeNames.length) badgeText = `Whole verse = ${r.verseTotal}`;
+      else if (r.allMatched && r.multi) badgeText = "All names present";
+    } else if (r.rashei) {
       badgeText = r.status === "forward" ? "Name in order"
         : r.status === "reverse" ? "Name in reverse order"
         : r.status === "other" ? "All names present"
@@ -2311,8 +2506,13 @@ function renderResults() {
       isPartial ? "partial-match" : "",
     ].filter(Boolean).join(" ");
     const badge = badgeText ? `<div class="badge">${badgeText}</div>` : "";
+    // Pills: the matched names. In gematria mode, annotate each with its value.
+    const gValue = {};
+    if (r.gematria) gematriaSpecs.forEach(s => { gValue[s.name] = s.value; });
     const pills = r.matchedNames.map(n =>
-      `<span class="name-pill">${escapeHtml(n)}</span>`
+      r.gematria
+        ? `<span class="name-pill">${escapeHtml(n)} = ${gValue[n]}</span>`
+        : `<span class="name-pill">${escapeHtml(n)}</span>`
     ).join("");
     // When "Reveal exact name(s)" is on, mark each name that appears verbatim.
     const exactPills = (state.filterExactReveal && r.exactNames && r.exactNames.length)
@@ -2358,10 +2558,14 @@ function renderResults() {
       </div>
     `;
   }).join("");
+  // In gematria mode, annotate the "for:" line with each name's value.
+  const forText = state.searchMode === "gematria"
+    ? gematriaSpecs.map(s => `${s.name} = ${s.value}`).join(" · ")
+    : filled.join(" · ");
   resultsEl.innerHTML = `
     <div class="results-meta">
       <span class="count">${state.results.length} verse${state.results.length !== 1 ? "s" : ""} found</span>
-      <span class="for">for: ${escapeHtml(filled.join(" · "))}</span>
+      <span class="for">for: ${escapeHtml(forText)}</span>
     </div>
     <div class="results-list">${items}</div>
   `;
@@ -2518,11 +2722,13 @@ function performSearch() {
         ? doNameVerseSearch(filled, scope)
         : state.searchMode === "rashei"
           ? doRosheiTeivotSearch(filled, scope)
-          : doSearch(filled, {
-              ...scope,
-              filterExact: state.filterExact,
-              filterStrict: state.filterStrict,
-            });
+          : state.searchMode === "gematria"
+            ? doGematriaSearch(filled, { ...scope, gematriaGadol: state.gematriaGadol })
+            : doSearch(filled, {
+                ...scope,
+                filterExact: state.filterExact,
+                filterStrict: state.filterStrict,
+              });
       renderResults();
       resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (e) {
@@ -2546,6 +2752,12 @@ kbToggle.addEventListener("click", () => {
 filterPsalmsBtn.addEventListener("click", () => {
   state.filterPsalmsOnly = !state.filterPsalmsOnly;
   renderToggle(filterPsalmsBtn, state.filterPsalmsOnly);
+  if (state.results !== null) performSearch();
+});
+
+filterGadolBtn.addEventListener("click", () => {
+  state.gematriaGadol = !state.gematriaGadol;
+  renderToggle(filterGadolBtn, state.gematriaGadol);
   if (state.results !== null) performSearch();
 });
 
