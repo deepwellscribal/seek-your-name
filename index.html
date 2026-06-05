@@ -621,6 +621,10 @@
     font-family: var(--F-heb);
     font-size: 0.9rem;
   }
+  .verse-card .gem-item .gm-gloss {
+    font-style: italic;
+    color: #6b5030;
+  }
   .verse-card .english {
     font-size: 0.82rem;
     color: #5a4020;
@@ -1533,6 +1537,10 @@ let TANAKH = null;
 // morphology, shipped inside tanakh.json). Used to keep an unrelated name from
 // surfacing just because it shares a root with the searched name.
 let PROPER_NOUNS = new Set();
+// Hebrew lemma skeleton → short English gloss (from the public-domain Strong's
+// lexicon), loaded from gloss.json. Used to caption the meaning of a matched
+// gematria word/phrase. Optional — if the file is absent, glosses just don't show.
+let GLOSS = {};
 let LOADING_ERROR = null;
 
 // English book name → Hebrew book name (for Hebrew references in results)
@@ -2146,19 +2154,34 @@ function doGematriaSearch(names, opts = {}) {
 // Highlight, in the display Hebrew, the word(s) and phrase(s) whose gematria
 // equals any of the name values. Whole-verse matches aren't word-highlighted
 // (the badge conveys them). Returns { html, matches } where matches lists each
-// distinct matched run as { text, value, len } — used to caption what equals what.
-function highlightGematria(displayHebrew, values, gadol) {
+// distinct matched run as { text, value, len, gloss }. `lemmaArr` (the verse's
+// per-word lemma skeletons, aligned to its words) is used with GLOSS to caption
+// the English meaning of each matched run.
+function highlightGematria(displayHebrew, values, gadol, lemmaArr) {
   const tokens = displayHebrew.split(/(\s+|[־׀׃]+)/);
   const isSep = tok => tok === "" || /^(\s|[־׀׃])+$/.test(tok);
-  const wordPos = [];                 // token index per content word, with value
+  const wordPos = [];                 // token index per content word, value, skeleton
   tokens.forEach((tok, ti) => {
     if (!isSep(tok)) {
       const cons = (tok.match(/[א-ת]/g) || []).join("");
-      wordPos.push({ ti, val: gematriaOf(cons, gadol) });
+      wordPos.push({ ti, val: gematriaOf(cons, gadol), skel: normalizeFinals(cons) });
     }
   });
   const vals = wordPos.map(w => w.val);
   const total = vals.reduce((a, b) => a + b, 0);
+  // For the gloss, prefer the stored lemma skeleton (only present when the word
+  // is inflected/differs from its lemma); otherwise fall back to the word's own
+  // finals-normalized form (which IS the lemma for base forms like אחד).
+  const lemmaAligned = Array.isArray(lemmaArr) && lemmaArr.length === wordPos.length;
+  const glossFor = (start, len) => {
+    const gs = [];
+    for (let i = start; i < start + len; i++) {
+      const skel = (lemmaAligned && lemmaArr[i]) ? lemmaArr[i] : wordPos[i].skel;
+      const g = GLOSS[skel];
+      if (g && !gs.includes(g)) gs.push(g);
+    }
+    return gs.join("; ");
+  };
   const mark = new Set();
   const matches = [], seen = new Set();
   for (const target of values) {
@@ -2170,7 +2193,7 @@ function highlightGematria(displayHebrew, values, gadol) {
       const firstTi = wordPos[start].ti, lastTi = wordPos[start + len - 1].ti;
       const text = tokens.slice(firstTi, lastTi + 1).join("").trim();
       const key = text + "|" + target;
-      if (!seen.has(key)) { seen.add(key); matches.push({ text, value: target, len }); }
+      if (!seen.has(key)) { seen.add(key); matches.push({ text, value: target, len, gloss: glossFor(start, len) }); }
     }
   }
   const html = tokens.map((tok, ti) =>
@@ -2501,15 +2524,16 @@ function renderResults() {
     let gemCaption = "";
     let hebHtml;
     if (r.gematria) {
-      const g = highlightGematria(cleanedHebrew, gematriaSpecs.map(s => s.value), r.gematriaGadol);
+      const g = highlightGematria(cleanedHebrew, gematriaSpecs.map(s => s.value), r.gematriaGadol, r.l);
       hebHtml = g.html;
-      // Caption: spell out each highlighted word/phrase, its value, and (when
-      // more than one name was entered) which name it equals.
+      // Caption: spell out each highlighted word/phrase, its value, its English
+      // meaning, and (when more than one name was entered) which name it equals.
       const items = g.matches.map(m => {
         const namesForVal = gematriaSpecs.filter(s => s.value === m.value).map(s => s.name);
         const nm = (gematriaSpecs.length > 1 && namesForVal.length)
           ? ` <span class="gm-name">→ ${escapeHtml(namesForVal.join(", "))}</span>` : "";
-        return `<span class="gm-item"><span class="he">${escapeHtml(m.text)}</span> = ${m.value}${nm}</span>`;
+        const gl = m.gloss ? ` <span class="gm-gloss">“${escapeHtml(m.gloss)}”</span>` : "";
+        return `<span class="gm-item"><span class="he">${escapeHtml(m.text)}</span> = ${m.value}${gl}${nm}</span>`;
       }).join("");
       if (items) gemCaption = `<div class="gem-matches">${items}</div>`;
     } else {
@@ -2865,6 +2889,8 @@ async function loadTanakh() {
     loadingEl.style.display = "none";
     searchBtn.disabled = false;
     searchBtn.textContent = "Search";
+    // Optional gloss data for gematria captions — non-blocking, failures ignored.
+    fetch("gloss.json").then(r => r.ok ? r.json() : null).then(g => { if (g) GLOSS = g; }).catch(() => {});
   } catch (e) {
     LOADING_ERROR = e.message;
     loadingEl.textContent = `Could not load the Tanakh: ${e.message}. Make sure tanakh.json is in the same folder as this page.`;
