@@ -596,6 +596,31 @@
     color: #5a4020;
     font-weight: 600;
   }
+  /* Gematria caption: what each highlighted word/phrase equals. */
+  .verse-card .gem-matches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.8rem;
+    direction: rtl;
+    margin: -0.1rem 0 0.7rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px dashed var(--rul);
+  }
+  .verse-card .gem-item {
+    font-family: var(--F-body);
+    font-size: 0.72rem;
+    color: #5a4020;
+  }
+  .verse-card .gem-item .he {
+    font-family: var(--F-heb);
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+  .verse-card .gem-item .gm-name {
+    color: var(--sep);
+    font-family: var(--F-heb);
+    font-size: 0.9rem;
+  }
   .verse-card .english {
     font-size: 0.82rem;
     color: #5a4020;
@@ -2120,7 +2145,8 @@ function doGematriaSearch(names, opts = {}) {
 
 // Highlight, in the display Hebrew, the word(s) and phrase(s) whose gematria
 // equals any of the name values. Whole-verse matches aren't word-highlighted
-// (the badge conveys them). Single words and phrase-runs are marked.
+// (the badge conveys them). Returns { html, matches } where matches lists each
+// distinct matched run as { text, value, len } — used to caption what equals what.
 function highlightGematria(displayHebrew, values, gadol) {
   const tokens = displayHebrew.split(/(\s+|[־׀׃]+)/);
   const isSep = tok => tok === "" || /^(\s|[־׀׃])+$/.test(tok);
@@ -2134,16 +2160,23 @@ function highlightGematria(displayHebrew, values, gadol) {
   const vals = wordPos.map(w => w.val);
   const total = vals.reduce((a, b) => a + b, 0);
   const mark = new Set();
+  const matches = [], seen = new Set();
   for (const target of values) {
     if (total === target) continue;   // whole-verse match → badge, don't blanket-highlight
     for (const [start, len] of sumWindows(vals, target)) {
       if (len >= wordPos.length) continue;   // spans whole verse → treat as whole, skip
       for (let i = 0; i < len; i++) mark.add(wordPos[start + i].ti);
+      // The matched phrase text (tokens from first to last matched word).
+      const firstTi = wordPos[start].ti, lastTi = wordPos[start + len - 1].ti;
+      const text = tokens.slice(firstTi, lastTi + 1).join("").trim();
+      const key = text + "|" + target;
+      if (!seen.has(key)) { seen.add(key); matches.push({ text, value: target, len }); }
     }
   }
-  return tokens.map((tok, ti) =>
+  const html = tokens.map((tok, ti) =>
     mark.has(ti) ? `<mark>${escapeHtml(tok)}</mark>` : escapeHtml(tok)
   ).join("");
+  return { html, matches };
 }
 
 // =============== UI State ===============
@@ -2465,13 +2498,27 @@ function renderResults() {
       wordLemma = new Map();
       r.s.split(/\s+/).forEach((w, i) => { if (r.l[i]) wordLemma.set(w, r.l[i]); });
     }
-    const hebHtml = r.gematria
-      ? highlightGematria(cleanedHebrew, gematriaSpecs.map(s => s.value), r.gematriaGadol)
-      : r.rashei
+    let gemCaption = "";
+    let hebHtml;
+    if (r.gematria) {
+      const g = highlightGematria(cleanedHebrew, gematriaSpecs.map(s => s.value), r.gematriaGadol);
+      hebHtml = g.html;
+      // Caption: spell out each highlighted word/phrase, its value, and (when
+      // more than one name was entered) which name it equals.
+      const items = g.matches.map(m => {
+        const namesForVal = gematriaSpecs.filter(s => s.value === m.value).map(s => s.name);
+        const nm = (gematriaSpecs.length > 1 && namesForVal.length)
+          ? ` <span class="gm-name">→ ${escapeHtml(namesForVal.join(", "))}</span>` : "";
+        return `<span class="gm-item"><span class="he">${escapeHtml(m.text)}</span> = ${m.value}${nm}</span>`;
+      }).join("");
+      if (items) gemCaption = `<div class="gem-matches">${items}</div>`;
+    } else {
+      hebHtml = r.rashei
         ? highlightAcrostic(cleanedHebrew, rasheiTargets)   // mark the acrostic run
         : r.nameVerse
           ? highlightEdges(cleanedHebrew)                   // mark first & last letter
           : highlightVerse(cleanedHebrew, allRoots, allowedForms, wordLemma);
+    }
     const cleanedEnglish = cleanEnglishAtDisplay(r.e || "");
     const englishHtml = cleanedEnglish ? `<div class="english">${escapeHtml(cleanedEnglish)}</div>` : "";
     const hebRefStr = hebRef(r.b, r.c, r.v);
@@ -2485,8 +2532,10 @@ function renderResults() {
     let badgeText = "";
     if (r.gematria) {
       // Whole-verse equivalence is the special, top-tier gematria match.
-      if (r.wholeNames && r.wholeNames.length) badgeText = `Whole verse = ${r.verseTotal}`;
-      else if (r.allMatched && r.multi) badgeText = "All names present";
+      if (r.wholeNames && r.wholeNames.length) {
+        badgeText = `Whole verse = ${r.verseTotal}`
+          + (r.multi ? ` · ${r.wholeNames.join(", ")}` : "");
+      } else if (r.allMatched && r.multi) badgeText = "All names present";
     } else if (r.rashei) {
       badgeText = r.status === "forward" ? "Name in order"
         : r.status === "reverse" ? "Name in reverse order"
@@ -2528,6 +2577,7 @@ function renderResults() {
       <div class="verse-card ${cardClass}" data-ref="${escapeHtml(r.r)}">
         ${badge}
         <div class="hebrew">${hebHtml}</div>
+        ${gemCaption}
         ${englishHtml}
         <div class="footer">
           <div class="refs">
