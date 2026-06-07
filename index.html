@@ -447,6 +447,67 @@
     letter-spacing: 0.12em;
   }
   .keyboard .ctrl-row button.bs { font-size: 1rem; }
+  /* English → Hebrew transliteration helper, below the keyboard. */
+  .translit {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--rul);
+  }
+  .translit-title {
+    font-family: var(--F-head);
+    font-weight: 500;
+    font-size: 0.58rem;
+    color: rgba(139, 110, 66, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.6rem;
+  }
+  .translit-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  .translit-input {
+    flex: 1;
+    min-width: 0;
+    border-radius: 2px;
+    color: var(--ink);
+    font-size: 1.1rem;
+    padding: 0.55rem 0.8rem;
+    font-family: var(--F-body);
+    outline: none;
+    border: 1px solid var(--rul);
+    background: rgba(255, 253, 245, 0.5);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .translit-input:focus {
+    background: rgba(255, 253, 245, 0.9);
+    border-color: var(--rul-strong);
+  }
+  .translit-btn {
+    flex: 0 0 auto;
+    background: var(--par);
+    color: var(--sep);
+    border: 1px solid var(--rul-strong);
+    border-radius: 2px;
+    padding: 0 0.95rem;
+    font-size: 0.62rem;
+    font-family: var(--F-head);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .translit-btn:hover { background: var(--ink); color: var(--cre); }
+  .translit-hint {
+    font-size: 0.68rem;
+    color: rgba(139, 110, 66, 0.7);
+    font-family: var(--F-body);
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+  .translit-hint[hidden] { display: none; }
   .filters {
     margin-top: 1rem;
     padding-top: 0.85rem;
@@ -873,20 +934,20 @@
     <div class="line right"></div>
   </div>
   <div class="intro-body">
-    <p class="intro-lead">Fathom the depths of your Hebrew name, discover hidden connections between self &amp; sacred text.</p>
+    <p class="intro-lead">Fathom the depths of your Hebrew name. Discover hidden connections between self &amp; sacred text. Illuminate your verse.</p>
     <nav class="intro-tabs" id="introTabs">
-      <button type="button" class="intro-tab" data-panel="what">What <span class="chev">&gt;&gt;&gt;</span></button>
       <button type="button" class="intro-tab" data-panel="why">Why <span class="chev">&gt;&gt;&gt;</span></button>
+      <button type="button" class="intro-tab" data-panel="what">What <span class="chev">&gt;&gt;&gt;</span></button>
       <button type="button" class="intro-tab" data-panel="who">Who <span class="chev">&gt;&gt;&gt;</span></button>
     </nav>
     <div class="intro-panel" id="panel-what" hidden>
-      <p>With this search tool, you can browse verses from Tanakh (the Jewish scriptural canon) that include your name as is, or go further and find verses that follow the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the roshei teivot (initial letters) of your name, illuminate connections via Gematria (numerology), or go deeper and discover the meaning(s) of your name embedded in the Hebrew shoreshim (word roots) of the text itself.</p>
+      <p>With this search tool, you can browse verses from <em>Tanakh</em> (the Jewish scriptural canon) that include your name as is, or go further and find verses that follow the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the <em>roshei teivot</em> (initial letters) of your name, illuminate connections via <em>Gematria</em> (numerology), or go deeper and discover the meaning(s) of your name embedded in the Hebrew <em>shoreshim</em> (word roots) of the text itself.</p>
       <p>If you find a verse for your name that you love and want to commission original artwork based on it — to strengthen this practice and further illuminate this knowledge of self — click the “Illustrate This Verse” button and send a message to the scribe-in-residence at Deep Well.</p>
     </div>
     <div class="intro-panel" id="panel-why" hidden>
-      <p>There’s an old custom to recite a verse associated with your name at the end of the Amidah prayer. Some siddurim (prayerbooks) even include a list of verses for people’s names based on first- and last-letter connections.</p>
-      <p>This practice is meant to help a person connect more deeply with her name. In this life, knowing your name means being in touch with your purpose and striving to fulfill it. This deep knowing, in turn, is said to help the soul pass an early trial in the afterlife: remembering her name.</p>
-      <blockquote><a href="https://www.chabad.org/library/article_cdo/aid/2451435/jewish/Names-Verses-and-Flaming-Hot-Rods.htm" target="_blank" rel="noopener">The Rebbe Rashab taught</a>: “through the letters of the ‘verses of the names,’ one merits that he is allowed to stand near the open doors and see what transpires in the Heavenly chambers.”</blockquote>
+      <p>There’s an old custom to recite a verse associated with your name at the end of the <em>Amidah</em> prayer. Some <em>siddurim</em> (prayerbooks) even include a list of verses for people’s names based on first- and last-letter connections.</p>
+      <p>This practice is meant to help a person connect more deeply with his or her name. In this life, knowing your name means being in touch with your purpose and striving to fulfill it. This deep knowing, in turn, is said to help the soul pass a major trial in the afterlife: remembering its name.</p>
+      <p><a href="https://www.chabad.org/library/article_cdo/aid/2451435/jewish/Names-Verses-and-Flaming-Hot-Rods.htm" target="_blank" rel="noopener">The <em>Rebbe Rashab</em> taught</a>: “through the letters of the ‘verses of the names,’ one merits that he is allowed to stand near the open doors and see what transpires in the Heavenly chambers.” May this search tool help facilitate such supernal gazing.</p>
     </div>
     <div class="intro-panel" id="panel-who" hidden>
       <p>This tool was made by Josh Fleet of Deep Well Scribal with the help of Claude Code and Sefaria. It is in ongoing development. If you notice mistakes or have ideas for improving or expanding the search function, reach out to <a href="mailto:josh@deepwell.studio">josh@deepwell.studio</a>.</p>
@@ -924,6 +985,14 @@
       <button id="kbToggle">conceal</button>
     </div>
     <div id="keyboard"></div>
+    <div class="translit" id="translit">
+      <div class="translit-title">Convert your English name to Hebrew</div>
+      <div class="translit-row">
+        <input type="text" id="translitInput" class="translit-input" dir="auto" placeholder="Type an English name" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        <button type="button" id="translitBtn" class="translit-btn">Transliterate</button>
+      </div>
+      <div class="translit-hint" id="translitHint" hidden>Copy &amp; paste Hebrew into Name field above</div>
+    </div>
     <div class="filters">
       <div class="heading">Filters</div>
       <button class="toggle on root-only" id="filterStrict" type="button">
@@ -2916,6 +2985,123 @@ function performSearch() {
   }, 20);
 }
 
+// =============== English → Hebrew transliteration ===============
+// A best-effort phonetic transliteration of an English name into Hebrew letters.
+// It's approximate by nature (English spelling is irregular, and Hebrew drops most
+// short vowels), so it's offered as a starting point the user can eyeball, adjust,
+// and paste into a name field above.
+const TRANSLIT_FINALS = { "כ":"ך", "מ":"ם", "נ":"ן", "פ":"ף", "צ":"ץ" };
+// Multi-letter sounds, checked longest-first.
+const TRANSLIT_DIGRAPHS = {
+  "sch":"ש", "tch":"ץ׳",
+  "sh":"ש", "ch":"ח", "ph":"פ", "th":"ת", "kh":"כ", "gh":"ג",
+  "ck":"ק", "wh":"ו", "ng":"נג", "qu":"קו", "tz":"צ", "ts":"צ",
+  "ee":"י", "ea":"י", "oo":"ו", "ou":"ו", "ow":"ו",
+  "ai":"יי", "ay":"יי", "ei":"יי", "ey":"יי",
+  "oi":"וי", "oy":"וי", "au":"ו", "aw":"ו",
+};
+// Single consonants.
+const TRANSLIT_CONS = {
+  b:"ב", c:"ק", d:"ד", f:"פ", g:"ג", h:"ה", j:"ג׳", k:"ק", l:"ל",
+  m:"מ", n:"נ", p:"פ", q:"ק", r:"ר", s:"ס", t:"ט", v:"ו", w:"ו",
+  x:"קס", z:"ז",
+};
+const TRANSLIT_VOWELS = new Set(["a","e","i","o","u"]);
+
+// Canonical Hebrew spellings for well-known Hebrew/biblical names and their common
+// English forms and variants. Checked BEFORE the phonetic fallback so a user who
+// copy/pastes without checking still gets the correct, accepted spelling (e.g.
+// Sarah → שרה, not the phonetic סרה). Keys are lowercased, letters only.
+const TRANSLIT_NAMES = {
+  // — Men —
+  aaron:"אהרן", abraham:"אברהם", avraham:"אברהם", abram:"אברם", avram:"אברם",
+  adam:"אדם", abel:"הבל", hevel:"הבל", akiva:"עקיבא", amos:"עמוס", ari:"ארי",
+  ariel:"אריאל", asher:"אשר", avi:"אבי", aviv:"אביב", baruch:"ברוך",
+  benjamin:"בנימין", ben:"בן", binyamin:"בנימין", bezalel:"בצלאל", boaz:"בועז",
+  cain:"קין", kayin:"קין", caleb:"כלב", calev:"כלב", chaim:"חיים", haim:"חיים",
+  hayim:"חיים", daniel:"דניאל", dan:"דן", david:"דוד", dov:"דב", eitan:"איתן",
+  ethan:"איתן", elazar:"אלעזר", eleazar:"אלעזר", eli:"אלי", elijah:"אליהו",
+  eliyahu:"אליהו", elisha:"אלישע", enoch:"חנוך", chanoch:"חנוך", ephraim:"אפרים",
+  efraim:"אפרים", esau:"עשו", esav:"עשו", ezekiel:"יחזקאל", yechezkel:"יחזקאל",
+  ezra:"עזרא", gabriel:"גבריאל", gavriel:"גבריאל", gad:"גד", gershon:"גרשון",
+  gershom:"גרשם", gideon:"גדעון", gidon:"גדעון", hezekiah:"חזקיהו",
+  chizkiyahu:"חזקיהו", hillel:"הלל", isaac:"יצחק", yitzhak:"יצחק", yitzchak:"יצחק",
+  yitzchok:"יצחק", isaiah:"ישעיהו", yeshayahu:"ישעיהו", ishmael:"ישמעאל",
+  yishmael:"ישמעאל", israel:"ישראל", yisrael:"ישראל", yisroel:"ישראל",
+  issachar:"יששכר", jacob:"יעקב", yaakov:"יעקב", yaacov:"יעקב", jeremiah:"ירמיהו",
+  yirmiyahu:"ירמיהו", jesse:"ישי", yishai:"ישי", joel:"יואל", yoel:"יואל",
+  jonah:"יונה", yonah:"יונה", jonathan:"יונתן", yonatan:"יונתן", yehonatan:"יהונתן",
+  joseph:"יוסף", yosef:"יוסף", yossi:"יוסי", joshua:"יהושע", yehoshua:"יהושע",
+  josiah:"יאשיהו", judah:"יהודה", yehuda:"יהודה", yehudah:"יהודה", laban:"לבן",
+  lavan:"לבן", levi:"לוי", lot:"לוט", malachi:"מלאכי", meir:"מאיר", menachem:"מנחם",
+  mendel:"מנדל", micah:"מיכה", michael:"מיכאל", michoel:"מיכאל", mordechai:"מרדכי",
+  mordecai:"מרדכי", moses:"משה", moshe:"משה", nachman:"נחמן", naftali:"נפתלי",
+  naphtali:"נפתלי", nathan:"נתן", natan:"נתן", nehemiah:"נחמיה", nechemia:"נחמיה",
+  nissim:"ניסים", noah:"נח", noach:"נח", obadiah:"עובדיה", ovadia:"עובדיה",
+  phinehas:"פנחס", pinchas:"פנחס", raphael:"רפאל", refael:"רפאל", reuben:"ראובן",
+  reuven:"ראובן", samson:"שמשון", shimshon:"שמשון", samuel:"שמואל", shmuel:"שמואל",
+  saul:"שאול", shaul:"שאול", seth:"שת", shabtai:"שבתי", shai:"שי", shimon:"שמעון",
+  simon:"שמעון", simeon:"שמעון", shlomo:"שלמה", solomon:"שלמה", simcha:"שמחה",
+  tzvi:"צבי", zvi:"צבי", uri:"אורי", uriel:"אוריאל", yair:"יאיר", jair:"יאיר",
+  zachary:"זכריה", zachariah:"זכריה", zechariah:"זכריה", zalman:"זלמן",
+  zebulun:"זבולון", zevulun:"זבולון",
+  // — Women —
+  abigail:"אביגיל", avigail:"אביגיל", adina:"עדינה", ariella:"אריאלה",
+  ariela:"אריאלה", atara:"עטרה", aviva:"אביבה", ayelet:"אילת", batya:"בתיה",
+  basya:"בתיה", batsheva:"בת שבע", bathsheba:"בת שבע", bracha:"ברכה", chana:"חנה",
+  chanah:"חנה", hannah:"חנה", hanna:"חנה", chava:"חוה", chavah:"חוה", eve:"חוה",
+  chaya:"חיה", dahlia:"דליה", dalia:"דליה", dana:"דנה", daniella:"דניאלה",
+  daniela:"דניאלה", deborah:"דבורה", devorah:"דבורה", dvora:"דבורה", delilah:"דלילה",
+  dina:"דינה", dinah:"דינה", edna:"עדנה", efrat:"אפרת", eliana:"אליאנה",
+  elisheva:"אלישבע", esther:"אסתר", gila:"גילה", hadassah:"הדסה", ilana:"אילנה",
+  keren:"קרן", leah:"לאה", liora:"ליאורה", maya:"מאיה", meira:"מאירה", michal:"מיכל",
+  miriam:"מרים", miryam:"מרים", naomi:"נעמי", nava:"נאוה", nechama:"נחמה",
+  nitzan:"ניצן", noa:"נועה", orly:"אורלי", penina:"פנינה", peninah:"פנינה",
+  rachel:"רחל", rebecca:"רבקה", rebekah:"רבקה", rivka:"רבקה", rivkah:"רבקה",
+  rina:"רינה", ruth:"רות", rut:"רות", sarah:"שרה", sara:"שרה", shira:"שירה",
+  shoshana:"שושנה", tamar:"תמר", tamara:"תמרה", tova:"טובה", tzipora:"צפורה",
+  tzippora:"צפורה", zipporah:"צפורה", yael:"יעל", jael:"יעל", yaffa:"יפה",
+  yehudit:"יהודית", judith:"יהודית", yocheved:"יוכבד", zahava:"זהבה",
+};
+
+function transliterateWord(raw) {
+  const key = raw.toLowerCase().replace(/[^a-z]/g, "");
+  if (!key) return "";
+  // Known name? Use its accepted Hebrew spelling.
+  if (TRANSLIT_NAMES[key]) return TRANSLIT_NAMES[key];
+  // Otherwise fall back to phonetics. Collapse doubled consonants (Hannah → Hanah).
+  const w = key.replace(/([bcdfghjklmnpqrstvwxz])\1+/g, "$1");
+  const n = w.length;
+  let out = "";
+  for (let i = 0; i < n; ) {
+    // Longest matching digraph first.
+    const seg3 = w.substr(i, 3), seg2 = w.substr(i, 2);
+    if (TRANSLIT_DIGRAPHS[seg3]) { out += TRANSLIT_DIGRAPHS[seg3]; i += 3; continue; }
+    if (TRANSLIT_DIGRAPHS[seg2]) { out += TRANSLIT_DIGRAPHS[seg2]; i += 2; continue; }
+    const ch = w[i];
+    const atStart = (i === 0), atEnd = (i === n - 1);
+    if (TRANSLIT_VOWELS.has(ch)) {
+      if (atStart) out += (ch === "i") ? "אי" : (ch === "o" || ch === "u") ? "או" : "א";
+      else if (atEnd) out += (ch === "a") ? "ה" : (ch === "i") ? "י" : (ch === "o" || ch === "u") ? "ו" : "";
+      else out += (ch === "i") ? "י" : (ch === "o" || ch === "u") ? "ו" : "";   // a, e silent mid-word
+    } else if (ch === "y") {
+      out += "י";
+    } else if (TRANSLIT_CONS[ch]) {
+      out += TRANSLIT_CONS[ch];
+    }
+    i++;
+  }
+  // Final-letter form on the last Hebrew consonant.
+  const last = out[out.length - 1];
+  if (TRANSLIT_FINALS[last]) out = out.slice(0, -1) + TRANSLIT_FINALS[last];
+  return out;
+}
+
+function transliterateToHebrew(text) {
+  return text.trim().split(/[\s-]+/).filter(Boolean)
+             .map(transliterateWord).filter(Boolean).join(" ");
+}
+
 // =============== Event wiring ===============
 addBtn.addEventListener("click", addField);
 
@@ -2976,6 +3162,28 @@ document.querySelectorAll("#introTabs .intro-tab").forEach(tab => {
     document.querySelectorAll("#introTabs .intro-tab").forEach(t => t.classList.remove("active"));
     if (reopen) { panel.hidden = false; tab.classList.add("active"); }
   });
+});
+
+// English → Hebrew transliteration helper. On "Transliterate", the field's English
+// text is replaced with its Hebrew form and a copy/paste hint appears. Editing the
+// field again restores LTR input and hides the hint until re-run.
+const translitInput = $("#translitInput");
+const translitBtn = $("#translitBtn");
+const translitHint = $("#translitHint");
+function runTransliteration() {
+  const hebrew = transliterateToHebrew(translitInput.value || "");
+  if (!hebrew) return;                       // nothing latin to convert — leave as is
+  translitInput.value = hebrew;
+  translitInput.setAttribute("dir", "rtl");
+  translitHint.hidden = false;
+}
+translitBtn.addEventListener("click", runTransliteration);
+translitInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); runTransliteration(); }
+});
+translitInput.addEventListener("input", () => {
+  translitInput.setAttribute("dir", "auto");
+  translitHint.hidden = true;
 });
 
 // Delegated handler for the per-verse "Illustrate This Verse" buttons/form. One
