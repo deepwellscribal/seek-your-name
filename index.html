@@ -165,10 +165,18 @@
     color: var(--sep);
     margin-right: 0.35rem;
   }
-  /* "More about this tool" disclosure — keeps the search box high on the page. */
-  header.intro .intro-more { margin-top: 0.2rem; }
-  header.intro .intro-more > summary {
-    list-style: none;
+  /* What / Why / Who: three labels on one centered row; clicking one opens its
+     panel below (tab-style — opening one closes the others). */
+  header.intro .intro-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.6rem;
+    margin-top: 0.2rem;
+  }
+  header.intro .intro-tab {
+    background: none;
+    border: none;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -180,18 +188,19 @@
     letter-spacing: 0.12em;
     color: var(--sep);
     padding: 0.1rem 0;
+    transition: color 0.15s;
   }
-  header.intro .intro-more > summary::-webkit-details-marker { display: none; }
-  header.intro .intro-more > summary::before {
-    content: "+";
-    font-size: 0.85rem;
-    line-height: 1;
-    color: var(--sep);
+  header.intro .intro-tab .chev {
+    font-size: 0.7rem;
+    letter-spacing: 0;
+    transition: transform 0.15s;
   }
-  header.intro .intro-more[open] > summary::before { content: "–"; }
-  header.intro .intro-more > summary:hover { color: var(--ink); }
-  header.intro .intro-more > *:not(summary) { margin-top: 0.85rem; }
-  header.intro .intro-more .intro-note { margin-top: 0.85rem; }
+  header.intro .intro-tab:hover { color: var(--ink); }
+  header.intro .intro-tab.active { color: var(--ink); }
+  header.intro .intro-tab.active .chev { transform: translateX(3px); }
+  header.intro .intro-panel { margin-top: 0.85rem; text-align: left; }
+  header.intro .intro-panel[hidden] { display: none; }
+  header.intro .intro-panel > *:first-child { margin-top: 0; }
   .search-wrap {
     width: 100%;
     max-width: 560px;
@@ -865,22 +874,24 @@
   </div>
   <div class="intro-body">
     <p class="intro-lead">Fathom the depths of your Hebrew name, discover hidden connections between self &amp; sacred text.</p>
-    <details class="intro-more">
-      <summary>What</summary>
+    <nav class="intro-tabs" id="introTabs">
+      <button type="button" class="intro-tab" data-panel="what">What <span class="chev">&gt;&gt;&gt;</span></button>
+      <button type="button" class="intro-tab" data-panel="why">Why <span class="chev">&gt;&gt;&gt;</span></button>
+      <button type="button" class="intro-tab" data-panel="who">Who <span class="chev">&gt;&gt;&gt;</span></button>
+    </nav>
+    <div class="intro-panel" id="panel-what" hidden>
       <p>With this search tool, you can browse verses from Tanakh (the Jewish scriptural canon) that include your name as is, or go further and find verses that follow the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the roshei teivot (initial letters) of your name, illuminate connections via Gematria (numerology), or go deeper and discover the meaning(s) of your name embedded in the Hebrew shoreshim (word roots) of the text itself.</p>
       <p>If you find a verse for your name that you love and want to commission original artwork based on it — to strengthen this practice and further illuminate this knowledge of self — click the “Illustrate This Verse” button and send a message to the scribe-in-residence at Deep Well.</p>
-    </details>
-    <details class="intro-more">
-      <summary>Why</summary>
+    </div>
+    <div class="intro-panel" id="panel-why" hidden>
       <p>There’s an old custom to recite a verse associated with your name at the end of the Amidah prayer. Some siddurim (prayerbooks) even include a list of verses for people’s names based on first- and last-letter connections.</p>
       <p>This practice is meant to help a person connect more deeply with her name. In this life, knowing your name means being in touch with your purpose and striving to fulfill it. This deep knowing, in turn, is said to help the soul pass an early trial in the afterlife: remembering her name.</p>
       <blockquote><a href="https://www.chabad.org/library/article_cdo/aid/2451435/jewish/Names-Verses-and-Flaming-Hot-Rods.htm" target="_blank" rel="noopener">The Rebbe Rashab taught</a>: “through the letters of the ‘verses of the names,’ one merits that he is allowed to stand near the open doors and see what transpires in the Heavenly chambers.”</blockquote>
-    </details>
-    <details class="intro-more">
-      <summary>Who</summary>
+    </div>
+    <div class="intro-panel" id="panel-who" hidden>
       <p>This tool was made by Josh Fleet of Deep Well Scribal with the help of Claude Code and Sefaria. It is in ongoing development. If you notice mistakes or have ideas for improving or expanding the search function, reach out to <a href="mailto:josh@deepwell.studio">josh@deepwell.studio</a>.</p>
       <p>Josh makes one-of-a-kind Hebrew letter art, including custom ketubot (wedding contracts), brachot (blessings), kavvanot (intentions), and kame’ot (amulets), and he is actively studying the laws of sofrut (the Jewish scribal tradition).</p>
-    </details>
+    </div>
   </div>
 </header>
 
@@ -2954,6 +2965,18 @@ searchBtn.addEventListener("click", performSearch);
 
 modeToggle.querySelectorAll(".mode-btn").forEach(b =>
   b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+// What / Why / Who — one centered row of labels; clicking one reveals its panel
+// below and closes the others (clicking the open one closes it).
+document.querySelectorAll("#introTabs .intro-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    const panel = document.getElementById("panel-" + tab.dataset.panel);
+    const reopen = panel.hidden;   // was closed → we're opening it
+    document.querySelectorAll(".intro-panel").forEach(p => { p.hidden = true; });
+    document.querySelectorAll("#introTabs .intro-tab").forEach(t => t.classList.remove("active"));
+    if (reopen) { panel.hidden = false; tab.classList.add("active"); }
+  });
+});
 
 // Delegated handler for the per-verse "Illustrate This Verse" buttons/form. One
 // listener on the results container survives every re-render of the cards.
