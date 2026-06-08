@@ -512,19 +512,63 @@
     margin-top: 1rem;
     padding-top: 0.85rem;
     border-top: 1px solid var(--rul);
+  }
+  /* "Filters >>>" reveal/conceal toggle. */
+  .filters-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--F-head);
+    font-weight: 600;
+    font-size: 0.6rem;
+    color: rgba(120, 94, 55, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transition: color 0.15s;
+  }
+  .filters-toggle:hover { color: var(--ink); }
+  .filters-toggle .chev { font-size: 0.7rem; letter-spacing: 0; transition: transform 0.15s; }
+  .filters-toggle.open .chev { transform: rotate(90deg); }
+  .filters-body {
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.6rem;
+    margin-top: 0.85rem;
   }
-  .filters .heading {
+  .filters-body[hidden] { display: none; }
+  .filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+  .filter-lbl {
     font-family: var(--F-head);
     font-weight: 500;
     font-size: 0.58rem;
-    color: rgba(120, 94, 55, 0.75);
+    color: rgba(120, 94, 55, 0.85);
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 0.1rem;
+    letter-spacing: 0.1em;
   }
+  .filter-select, .filter-text {
+    font-family: var(--F-body);
+    font-size: 0.8rem;
+    color: var(--ink);
+    background: rgba(255, 253, 245, 0.6);
+    border: 1px solid var(--rul);
+    border-radius: 2px;
+    padding: 0.32rem 0.5rem;
+    outline: none;
+    max-width: 60%;
+    transition: border-color 0.15s;
+  }
+  .filter-select { cursor: pointer; }
+  .filter-text { direction: rtl; }
+  .filter-select:focus, .filter-text:focus { border-color: var(--rul-strong); }
   .toggle {
     display: flex;
     align-items: center;
@@ -792,20 +836,21 @@
   }
   .verse-card .commission-btn {
     font-family: var(--F-head);
-    font-weight: 500;
-    font-size: 0.6rem;
+    font-weight: 600;
+    font-size: 0.62rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--sep);
-    background: none;
-    border: 1px solid var(--rul-strong);
+    color: var(--cre);
+    background: var(--ink);
+    border: 1px solid var(--ink);
     border-radius: 2px;
-    padding: 3px 9px;
+    padding: 5px 12px;
     cursor: pointer;
     transition: background 0.15s, color 0.15s, border-color 0.15s;
   }
-  .verse-card .commission-btn:hover { background: var(--ink); color: var(--cre); border-color: var(--ink); }
-  .verse-card .commission-btn.open { background: var(--ink); color: var(--cre); border-color: var(--ink); }
+  .verse-card .commission-btn:hover { background: #43301a; border-color: #43301a; }
+  /* When the form is open, recede the button to an outline so its state reads. */
+  .verse-card .commission-btn.open { background: none; color: var(--sep); border-color: var(--rul-strong); }
   /* Commission form: an understated parchment panel under the verse; on wide
      screens it floats into the right margin beside the card. */
   .commission-form {
@@ -966,7 +1011,7 @@
         <span class="mode-he">שורש</span><span class="mode-en">Root</span>
       </button>
       <button type="button" class="mode-btn" data-mode="rashei">
-        <span class="mode-he">ראשי תבות</span><span class="mode-en">Acrostic</span>
+        <span class="mode-he">ראשי תבות</span><span class="mode-en">Anagrams &amp; Acrostics</span>
       </button>
       <button type="button" class="mode-btn" data-mode="nameverse">
         <span class="mode-he">ראשון ואחרון</span><span class="mode-en">First &amp; Last<span class="tab-extra"> Letter</span></span>
@@ -994,31 +1039,96 @@
       <div class="translit-hint" id="translitHint" hidden>Copy &amp; paste Hebrew into Name field above</div>
     </div>
     <div class="filters">
-      <div class="heading">Filters</div>
-      <button class="toggle on root-only" id="filterStrict" type="button">
-        <span class="switch"><span class="knob"></span></span>
-        <span class="text">Significant matches only (recommended)</span>
-      </button>
-      <button class="toggle gematria-only" id="filterGadol" type="button">
-        <span class="switch"><span class="knob"></span></span>
-        <span class="text">Mispar gadol (final letters count 500–900)</span>
-      </button>
-      <button class="toggle root-only" id="filterExact" type="button">
-        <span class="switch"><span class="knob"></span></span>
-        <span class="text">Conceal verses containing the exact name</span>
-      </button>
-      <button class="toggle" id="filterExactReveal" type="button">
-        <span class="switch"><span class="knob"></span></span>
-        <span class="text">Reveal verses containing your exact name(s)</span>
-      </button>
-      <button class="toggle" id="filterTorah" type="button">
-        <span class="switch"><span class="knob"></span></span>
-        <span class="text">Reveal verses from the Torah (Chumash) only</span>
-      </button>
-      <button class="toggle" id="filterPsalms" type="button">
-        <span class="switch"><span class="knob"></span></span>
-        <span class="text">Reveal verses from Psalms (Tehilim) only</span>
-      </button>
+      <button type="button" class="filters-toggle" id="filtersToggle">Filters <span class="chev">&gt;&gt;&gt;</span></button>
+      <div class="filters-body" id="filtersBody" hidden>
+        <!-- Scope (all modes) -->
+        <div class="filter-row">
+          <label class="filter-lbl" for="scopeSelect">Search in</label>
+          <select class="filter-select" id="scopeSelect">
+            <option value="all">All of Tanakh</option>
+            <option value="torah">Torah (Chumash)</option>
+            <option value="prophets">Prophets (Nevi'im)</option>
+            <option value="writings">Writings (Ketuvim)</option>
+            <option value="psalms">Psalms (Tehillim)</option>
+          </select>
+        </div>
+        <!-- Theme (all modes) -->
+        <div class="filter-row">
+          <label class="filter-lbl" for="themeSelect">Theme</label>
+          <select class="filter-select" id="themeSelect">
+            <option value="">Any</option>
+            <option value="love">Love · אהבה</option>
+            <option value="light">Light · אור</option>
+            <option value="peace">Peace · שלום</option>
+            <option value="blessing">Blessing · ברכה</option>
+            <option value="strength">Strength · כח</option>
+            <option value="joy">Joy · שמחה</option>
+            <option value="wisdom">Wisdom · חכמה</option>
+            <option value="mercy">Mercy · רחמים</option>
+            <option value="praise">Praise · תהילה</option>
+            <option value="life">Life · חיים</option>
+          </select>
+        </div>
+        <div class="filter-row">
+          <label class="filter-lbl" for="themeKeyword">…or Hebrew word</label>
+          <input class="filter-text" id="themeKeyword" type="text" dir="rtl" placeholder="e.g. אור" autocomplete="off" spellcheck="false" />
+        </div>
+        <!-- Quality (all modes) -->
+        <button class="toggle" id="filterShort" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Short verses only (6 words or fewer)</span>
+        </button>
+        <button class="toggle" id="filterGenealogy" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Hide genealogies &amp; name-lists</span>
+        </button>
+        <!-- Root (shoresh) mode only -->
+        <button class="toggle on root-only" id="filterStrict" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Significant matches only (recommended)</span>
+        </button>
+        <button class="toggle root-only" id="filterExact" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Conceal verses containing the exact name</span>
+        </button>
+        <!-- Anagrams &amp; Acrostics mode only -->
+        <button class="toggle rashei-only" id="filterAnagramsOnly" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Anagrams only</span>
+        </button>
+        <button class="toggle rashei-only" id="filterAcrosticsOnly" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Acrostics only</span>
+        </button>
+        <div class="filter-row rashei-only">
+          <label class="filter-lbl" for="acrosticDir">Acrostic direction</label>
+          <select class="filter-select" id="acrosticDir">
+            <option value="any">Any</option>
+            <option value="forward">In order</option>
+            <option value="reverse">Reverse</option>
+          </select>
+        </div>
+        <!-- Numerology (gematria) mode only -->
+        <div class="filter-row gematria-only">
+          <label class="filter-lbl" for="gematriaMethod">Method</label>
+          <select class="filter-select" id="gematriaMethod">
+            <option value="standard">Standard</option>
+            <option value="gadol">Mispar gadol (finals 500–900)</option>
+            <option value="katan">Mispar katan (reduced)</option>
+            <option value="siduri">Ordinal (siduri)</option>
+            <option value="atbash">Atbash (mirror cipher)</option>
+          </select>
+        </div>
+        <button class="toggle gematria-only" id="filterKollel" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Include kollel (±1)</span>
+        </button>
+        <!-- General -->
+        <button class="toggle" id="filterExactReveal" type="button">
+          <span class="switch"><span class="knob"></span></span>
+          <span class="text">Reveal verses containing your exact name(s)</span>
+        </button>
+      </div>
     </div>
     <div id="error" class="error" style="display:none"></div>
     <button class="search-btn" id="searchBtn" disabled>Loading the Tanakh…</button>
@@ -1724,6 +1834,68 @@ const BOOK_ORDER = [
 const BOOK_INDEX = {};
 BOOK_ORDER.forEach((b, i) => BOOK_INDEX[b] = i);
 
+// =============== General filters (apply across all search modes) ===============
+const SHORT_MAX_WORDS = 6;            // "short verses only" threshold (≤ this many words)
+const GENEALOGY_THRESHOLD = 0.5;      // hide verses that are ≥ this fraction proper nouns
+// Preset themes → Hebrew roots. A verse "matches" a theme if any of its words
+// genuinely shares one of these roots (same matcher the shoresh search uses).
+const THEMES = {
+  love:     ["אהב", "חבב", "ידד", "חשק"],
+  light:    ["אור", "נהר", "זרח", "יפע"],
+  peace:    ["שלם"],
+  blessing: ["ברך"],
+  strength: ["חזק", "אמץ", "גבר", "עזז", "כח"],
+  joy:      ["שמח", "גיל", "רנן", "שוש", "ששׂ"],
+  wisdom:   ["חכם", "בין", "שכל", "ידע", "דעת"],
+  mercy:    ["רחם", "חנן", "חסד"],
+  praise:   ["הלל", "ידה", "שבח", "זמר", "רנן"],
+  life:     ["חיה", "חיי"],
+};
+function nameFraction(verse) {
+  const words = verse.s.split(/\s+/);
+  if (!words.length) return 0;
+  return words.filter(w => properNounForm(w) !== null).length / words.length;
+}
+function verseMatchesTheme(verse, roots) {
+  const words = verse.s.split(/\s+/);
+  return words.some(w => roots.some(r => rootMatchQuality(w, r) > 0));
+}
+// True if the verse should be EXCLUDED given the active scope/quality/theme opts.
+// Called at the top of every search loop so all modes honor the same filters.
+function verseExcluded(verse, opts = {}) {
+  const { scope = "all", shortOnly = false, hideGenealogy = false, theme = null } = opts;
+  if (scope === "torah"    && !TORAH_BOOKS.has(verse.b)) return true;
+  if (scope === "prophets" && !PROPHETS_BOOKS.has(verse.b)) return true;
+  if (scope === "writings" && (TORAH_BOOKS.has(verse.b) || PROPHETS_BOOKS.has(verse.b))) return true;
+  if (scope === "psalms"   && verse.b !== "Psalms") return true;
+  if (shortOnly && verse.s.split(/\s+/).length > SHORT_MAX_WORDS) return true;
+  if (hideGenealogy && nameFraction(verse) >= GENEALOGY_THRESHOLD) return true;
+  if (theme && theme.length && !verseMatchesTheme(verse, theme)) return true;
+  return false;
+}
+
+// =============== Anagram helpers (used by the Anagrams & Acrostics mode) ===============
+function letterCounts(letters) { const c = {}; for (const ch of letters) c[ch] = (c[ch] || 0) + 1; return c; }
+function sameCounts(a, b) {
+  const ka = Object.keys(a); if (ka.length !== Object.keys(b).length) return false;
+  for (const k of ka) if (a[k] !== b[k]) return false; return true;
+}
+// Every run of CONSECUTIVE words whose combined letters are an exact anagram of
+// `target` (a {counts, len}). Returns [startWordIndex, wordLength] pairs.
+function anagramRuns(words, target) {
+  const runs = [];
+  for (let i = 0; i < words.length; i++) {
+    let len = 0; const counts = {};
+    for (let j = i; j < words.length; j++) {
+      len += words[j].length;
+      if (len > target.len) break;
+      for (const ch of words[j]) counts[ch] = (counts[ch] || 0) + 1;
+      if (len === target.len) { if (sameCounts(counts, target.counts)) runs.push([i, j - i + 1]); break; }
+    }
+  }
+  return runs;
+}
+
 // Do the ordered search `terms` appear as consecutive words in `words`, each a
 // clean match (quality ≥ 2)? Requires at least two terms. This is what lifts a
 // verse that literally contains the name-phrase (e.g. בְּלֶב־יָם, "Lev-Yam") to
@@ -1780,8 +1952,7 @@ function doSearch(names, opts = {}) {
 
   const results = [];
   for (const verse of TANAKH) {
-    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
-    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    if (verseExcluded(verse, opts)) continue;
 
     const words = verse.s.split(/\s+/);
     const lemmas = verse.l;                   // per-word lemma skeletons (or undefined)
@@ -1963,42 +2134,80 @@ const STATUS_RANK = { forward: 3, reverse: 2, other: 1 };
 
 function doRosheiTeivotSearch(names, opts = {}) {
   if (!TANAKH) return [];
-  const { filterTorahOnly = false, filterPsalmsOnly = false, filterExactReveal = false } = opts;
-  const targets = rosheiTargets(names);
+  const { filterExactReveal = false,
+          anagramsOnly = false, acrosticsOnly = false, acrosticDir = "any" } = opts;
+  const targets = rosheiTargets(names).map(t => ({
+    ...t, counts: letterCounts(t.letters), len: t.letters.length,
+  }));
   if (!targets.length) return [];
   const multi = targets.length > 1;
   const letterArrays = targets.map(t => t.letters);
 
   const results = [];
   for (const verse of TANAKH) {
-    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
-    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    if (verseExcluded(verse, opts)) continue;
     const words = verse.s.split(/\s+/);
     if (words.length < 2) continue;
     const initials = words.map(w => w[0]);
-    const matched = targets.filter(t => acrosticRun(initials, t.letters) >= 0).map(t => t.word);
-    if (!matched.length) continue;
-    const allMatched = matched.length === targets.length;
-    // Flag how the name reads as an acrostic:
-    //  - a single name (one target) is always spelled in consecutive order, so
-    //    every match is "forward" (in order);
-    //  - a multi-part name is flagged only when ALL parts are present AND
-    //    contiguous (no intervening non-name words), forward/reverse/other.
-    const status = !allMatched ? null
-      : !multi ? "forward"
-      : (contiguousAcrostic(initials, letterArrays) || {}).status || null;
+
+    // --- Acrostic side: each target's initials in forward and/or reverse order ---
+    const acroNames = [];
+    const dirs = new Set();
+    for (const t of targets) {
+      const fwd = acrosticRun(initials, t.letters) >= 0;
+      const rev = acrosticRun(initials, [...t.letters].reverse()) >= 0;
+      if (fwd || rev) acroNames.push(t.word);
+      if (fwd) dirs.add("forward");
+      if (rev) dirs.add("reverse");
+    }
+    const acroAll = acroNames.length === targets.length;
+    // How the name reads (for the badge): single name → its own direction; a
+    // multi-part name only when ALL parts are present AND contiguous.
+    let status = null;
+    if (acroNames.length) {
+      status = !acroAll ? null
+        : !multi ? (dirs.has("forward") ? "forward" : "reverse")
+        : (contiguousAcrostic(initials, letterArrays) || {}).status || null;
+    }
+    const dirOK = acrosticDir === "any" || dirs.has(acrosticDir);
+    const acrosticOK = acroNames.length > 0 && dirOK;
+
+    // --- Anagram side: a run of consecutive words = a name's letters, reordered ---
+    const anaNames = [];
+    let anaRuns = [];
+    for (const t of targets) {
+      const runs = anagramRuns(words, t);
+      if (runs.length) { anaNames.push(t.word); anaRuns = anaRuns.concat(runs); }
+    }
+    const anagramOK = anaNames.length > 0;
+
+    // Combine, honoring the "only" toggles.
+    let include;
+    if (acrosticsOnly && anagramsOnly) include = acrosticOK && anagramOK;
+    else if (acrosticsOnly) include = acrosticOK;
+    else if (anagramsOnly) include = anagramOK;
+    else include = acrosticOK || anagramOK;
+    if (!include) continue;
+
+    const matchedNames = Array.from(new Set([
+      ...(acrosticOK ? acroNames : []), ...(anagramOK ? anaNames : []),
+    ]));
+    const allMatched = matchedNames.length === targets.length;
     const nameFrac = words.filter(w => properNounForm(w) !== null).length / words.length;
     const exactNames = exactNamesInVerse(verse.s, names);
     results.push({
       ...verse,
-      matchedNames: matched,
+      matchedNames,
       allMatched,
-      status,            // 'forward' | 'reverse' | 'other' | null
+      status: acrosticOK ? status : null,   // 'forward' | 'reverse' | 'other' | null
       multi,
       rashei: true,
+      acrostic: acrosticOK,
+      anagram: anagramOK,
+      anagramRuns: anagramOK ? anaRuns : [],
       isPsalms: verse.b === "Psalms",
       nameBucket: Math.round(nameFrac * 4),
-      coverage: matched.length,
+      coverage: matchedNames.length,
       exactNames,
       exactCount: exactNames.length,
       sources: [],
@@ -2025,7 +2234,7 @@ function doRosheiTeivotSearch(names, opts = {}) {
 // Mark the words whose initials spell the name. If the whole name appears as one
 // contiguous block (any order), mark that block; otherwise mark each target's
 // first run. Works on the display Hebrew directly — no alignment with verse.s.
-function highlightAcrostic(displayHebrew, targetWords) {
+function highlightAcrostic(displayHebrew, targetWords, anagramRuns = []) {
   const tokens = displayHebrew.split(/(\s+|[־׀׃]+)/);
   const isSep = tok => tok === "" || /^(\s|[־׀׃])+$/.test(tok);
   const wordPos = [];                       // { ti, initial } for each word token
@@ -2038,16 +2247,20 @@ function highlightAcrostic(displayHebrew, targetWords) {
   const initials = wordPos.map(w => w.initial);
   const letterArrays = targetWords.map(tw => [...strip(tw)]).filter(a => a.length >= 2);
   const mark = new Set();
-  const addRun = (start, len) => { for (let i = 0; i < len; i++) mark.add(wordPos[start + i].ti); };
+  const addRun = (start, len) => { for (let i = 0; i < len; i++) if (wordPos[start + i]) mark.add(wordPos[start + i].ti); };
   const block = letterArrays.length >= 2 ? contiguousAcrostic(initials, letterArrays) : null;
   if (block) {
     addRun(block.start, block.len);
   } else {
     for (const letters of letterArrays) {
-      const k = acrosticRun(initials, letters);
+      // Mark the acrostic run in whichever direction it reads (forward or reverse).
+      let k = acrosticRun(initials, letters);
+      if (k < 0) k = acrosticRun(initials, [...letters].reverse());
       if (k >= 0) addRun(k, letters.length);
     }
   }
+  // Anagram runs are word-index ranges aligned to the content words (= verse.s).
+  for (const [start, len] of anagramRuns) addRun(start, len);
   return tokens.map((tok, ti) =>
     mark.has(ti) ? `<mark>${escapeHtml(tok)}</mark>` : escapeHtml(tok)
   ).join("");
@@ -2069,8 +2282,7 @@ function doSimpleSearch(names, opts = {}) {
 
   const results = [];
   for (const verse of TANAKH) {
-    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
-    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    if (verseExcluded(verse, opts)) continue;
     const matched = exactNamesInVerse(verse.s, specs);
     if (!matched.length) continue;
     results.push({
@@ -2128,8 +2340,7 @@ function doNameVerseSearch(names, opts = {}) {
 
   const results = [];
   for (const verse of TANAKH) {
-    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
-    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    if (verseExcluded(verse, opts)) continue;
     const s = verse.s;
     if (!s) continue;
     const vFirst = s[0], vLast = s[s.length - 1];
@@ -2213,6 +2424,39 @@ const GEMATRIA_BASE = {
   "ק":100,"ר":200,"ש":300,"ת":400,
 };
 const GEMATRIA_GADOL = { ...GEMATRIA_BASE, "ך":500,"ם":600,"ן":700,"ף":800,"ץ":900 };
+// Mispar katan: each letter reduced to its 1–9 base (trailing zeros dropped).
+const GEMATRIA_KATAN = {
+  "א":1,"ב":2,"ג":3,"ד":4,"ה":5,"ו":6,"ז":7,"ח":8,"ט":9,
+  "י":1,"כ":2,"ך":2,"ל":3,"מ":4,"ם":4,"נ":5,"ן":5,
+  "ס":6,"ע":7,"פ":8,"ף":8,"צ":9,"ץ":9,
+  "ק":1,"ר":2,"ש":3,"ת":4,
+};
+// Mispar siduri: ordinal position 1–22 (final forms share their base position).
+const GEMATRIA_SIDURI = {
+  "א":1,"ב":2,"ג":3,"ד":4,"ה":5,"ו":6,"ז":7,"ח":8,"ט":9,
+  "י":10,"כ":11,"ך":11,"ל":12,"מ":13,"ם":13,"נ":14,"ן":14,
+  "ס":15,"ע":16,"פ":17,"ף":17,"צ":18,"ץ":18,
+  "ק":19,"ר":20,"ש":21,"ת":22,
+};
+const GEMATRIA_MAPS = {
+  standard: GEMATRIA_BASE, gadol: GEMATRIA_GADOL, katan: GEMATRIA_KATAN, siduri: GEMATRIA_SIDURI,
+};
+// Atbash: mirror each letter (א↔ת, ב↔ש …). Finals map via their base letter.
+const ATBASH = {
+  "א":"ת","ב":"ש","ג":"ר","ד":"ק","ה":"צ","ו":"פ","ז":"ע","ח":"ס","ט":"נ","י":"מ","כ":"ל",
+  "ל":"כ","מ":"י","נ":"ט","ס":"ח","ע":"ז","פ":"ו","צ":"ה","ק":"ד","ר":"ג","ש":"ב","ת":"א",
+  "ך":"ל","ם":"י","ן":"ט","ף":"ו","ץ":"ה",
+};
+function atbashTransform(text) { let o = ""; for (const ch of text) o += (ATBASH[ch] || ch); return o; }
+function sumWith(text, map) { let s = 0; for (const ch of text) s += map[ch] || 0; return s; }
+// The letter→value map applied to VERSE words for a given method. Atbash matches
+// on the standard value of the transformed name, so verses use the standard map.
+function verseLetterMap(method) { return method === "atbash" ? GEMATRIA_BASE : (GEMATRIA_MAPS[method] || GEMATRIA_BASE); }
+// The numeric value of a NAME's letters under a method (atbash = mirror, then standard sum).
+function gematriaValue(text, method) {
+  if (method === "atbash") return sumWith(atbashTransform(text), GEMATRIA_BASE);
+  return sumWith(text, GEMATRIA_MAPS[method] || GEMATRIA_BASE);
+}
 
 // Sum the gematria of a string's Hebrew letters (final forms preserved — do NOT
 // normalize before calling). Non-letters (nikud, spaces, punctuation) are ignored.
@@ -2248,37 +2492,42 @@ function sumWindows(vals, target) {
 
 function doGematriaSearch(names, opts = {}) {
   if (!TANAKH) return [];
-  const { filterTorahOnly = false, filterPsalmsOnly = false,
-          filterExactReveal = false, gematriaGadol = false } = opts;
-  // One target value per name field — the sum of its letters as typed. We keep
-  // final letters as entered (strip() normalizes finals, which would break
-  // mispar gadol), taking only the Hebrew letters.
+  const { filterExactReveal = false, gematriaMethod = "standard", gematriaKollel = false } = opts;
+  const vmap = verseLetterMap(gematriaMethod);
+  // One target value per name field, computed under the chosen method. (Atbash
+  // mirrors the name first, then takes its standard value.) Only Hebrew letters.
   const specs = names.map(n => {
     const letters = (n.match(/[א-ת]/g) || []).join("");
-    return letters ? { name: n, value: gematriaOf(letters, gematriaGadol) } : null;
+    return letters ? { name: n, value: gematriaValue(letters, gematriaMethod) } : null;
   }).filter(Boolean);
   if (!specs.length) return [];
   const multi = specs.length > 1;
+  // im ha-kollel: also accept a value off by one in either direction.
+  const targetsFor = v => gematriaKollel ? [v - 1, v, v + 1] : [v];
 
   const results = [];
   for (const verse of TANAKH) {
-    if (filterTorahOnly && !TORAH_BOOKS.has(verse.b)) continue;
-    if (filterPsalmsOnly && verse.b !== "Psalms") continue;
+    if (verseExcluded(verse, opts)) continue;
     const words = gematriaWords(verse.h);
     if (!words.length) continue;
-    const vals = words.map(w => gematriaOf(w, gematriaGadol));
+    const vals = words.map(w => sumWith(w, vmap));
     const total = vals.reduce((a, b) => a + b, 0);
 
     const matchedNames = [];
     let bestKind = 0;                 // 1 word, 2 phrase, 3 whole-verse (highest)
     const wholeNames = [];
     for (const sp of specs) {
-      const windows = sumWindows(vals, sp.value);
-      const whole = total === sp.value;
-      if (!windows.length && !whole) continue;
+      let matched = false, whole = false, phrase = false;
+      for (const tv of targetsFor(sp.value)) {
+        if (tv <= 0) continue;
+        if (total === tv) whole = true;
+        const windows = sumWindows(vals, tv);
+        if (windows.length) { matched = true; if (windows.some(w => w[1] >= 2)) phrase = true; }
+      }
+      if (!matched && !whole) continue;
       matchedNames.push(sp.name);
       if (whole) { wholeNames.push(sp.name); bestKind = Math.max(bestKind, 3); }
-      else if (windows.some(w => w[1] >= 2)) bestKind = Math.max(bestKind, 2);
+      else if (phrase) bestKind = Math.max(bestKind, 2);
       else bestKind = Math.max(bestKind, 1);
     }
     if (!matchedNames.length) continue;
@@ -2290,7 +2539,8 @@ function doGematriaSearch(names, opts = {}) {
       allMatched: matchedNames.length === specs.length,
       multi,
       gematria: true,
-      gematriaGadol,
+      gematriaMethod,
+      gematriaKollel,
       verseTotal: total,
       wholeNames,                     // names whose value == whole-verse total
       bestKind,                       // for ranking within non-whole matches
@@ -2321,14 +2571,15 @@ function doGematriaSearch(names, opts = {}) {
 // distinct matched run as { text, value, len, gloss }. `lemmaArr` (the verse's
 // per-word lemma skeletons, aligned to its words) is used with GLOSS to caption
 // the English meaning of each matched run.
-function highlightGematria(displayHebrew, values, gadol, lemmaArr) {
+function highlightGematria(displayHebrew, values, method, lemmaArr, kollel) {
+  const vmap = verseLetterMap(method);
   const tokens = displayHebrew.split(/(\s+|[־׀׃]+)/);
   const isSep = tok => tok === "" || /^(\s|[־׀׃])+$/.test(tok);
   const wordPos = [];                 // token index per content word, value, skeleton
   tokens.forEach((tok, ti) => {
     if (!isSep(tok)) {
       const cons = (tok.match(/[א-ת]/g) || []).join("");
-      wordPos.push({ ti, val: gematriaOf(cons, gadol), skel: normalizeFinals(cons) });
+      wordPos.push({ ti, val: sumWith(cons, vmap), skel: normalizeFinals(cons) });
     }
   });
   const vals = wordPos.map(w => w.val);
@@ -2348,7 +2599,10 @@ function highlightGematria(displayHebrew, values, gadol, lemmaArr) {
   };
   const mark = new Set();
   const matches = [], seen = new Set();
-  for (const target of values) {
+  // With kollel on, a window may be off the name value by one in either direction.
+  const wantTargets = new Set();
+  for (const v of values) (kollel ? [v - 1, v, v + 1] : [v]).forEach(t => { if (t > 0) wantTargets.add(t); });
+  for (const target of wantTargets) {
     if (total === target) continue;   // whole-verse match → badge, don't blanket-highlight
     for (const [start, len] of sumWindows(vals, target)) {
       if (len >= wordPos.length) continue;   // spans whole verse → treat as whole, skip
@@ -2374,10 +2628,20 @@ const state = {
   searchMode: "simple", // "simple" (exact name) | "root" (shoresh) | "rashei" (roshei teivot) | "nameverse" (first & last) | "gematria"
   filterExact: false,
   filterExactReveal: false,
-  filterTorahOnly: false,
-  filterPsalmsOnly: false,
   filterStrict: true,
-  gematriaGadol: false,
+  // General filters (all modes)
+  scope: "all",            // all | torah | prophets | writings | psalms
+  shortOnly: false,
+  hideGenealogy: false,
+  theme: "",               // preset theme key, or ""
+  themeKeyword: "",        // free-text Hebrew keyword
+  // Numerology (gematria) mode
+  gematriaMethod: "standard",   // standard | gadol | katan | siduri | atbash
+  gematriaKollel: false,
+  // Anagrams & Acrostics mode
+  anagramsOnly: false,
+  acrosticsOnly: false,
+  acrosticDir: "any",      // any | forward | reverse
   results: null,
   searching: false,
 };
@@ -2395,9 +2659,18 @@ const addBtn = $("#addBtn");
 const filterExactBtn = $("#filterExact");
 const filterExactRevealBtn = $("#filterExactReveal");
 const filterStrictBtn = $("#filterStrict");
-const filterTorahBtn = $("#filterTorah");
-const filterPsalmsBtn = $("#filterPsalms");
-const filterGadolBtn = $("#filterGadol");
+const filtersToggle = $("#filtersToggle");
+const filtersBody = $("#filtersBody");
+const scopeSelect = $("#scopeSelect");
+const themeSelect = $("#themeSelect");
+const themeKeywordInput = $("#themeKeyword");
+const filterShortBtn = $("#filterShort");
+const filterGenealogyBtn = $("#filterGenealogy");
+const gematriaMethodSel = $("#gematriaMethod");
+const filterKollelBtn = $("#filterKollel");
+const filterAnagramsOnlyBtn = $("#filterAnagramsOnly");
+const filterAcrosticsOnlyBtn = $("#filterAcrosticsOnly");
+const acrosticDirSel = $("#acrosticDir");
 const nameLabel = $(".search-card .label");
 const modeToggle = $("#modeToggle");
 const modeDesc = $("#modeDesc");
@@ -2429,6 +2702,9 @@ function setMode(mode) {
   });
   document.querySelectorAll(".filters .gematria-only").forEach(el => {
     el.style.display = (mode === "gematria") ? "" : "none";
+  });
+  document.querySelectorAll(".filters .rashei-only").forEach(el => {
+    el.style.display = (mode === "rashei") ? "" : "none";
   });
   // In simple (exact-name) mode every result already contains the name verbatim,
   // so the "reveal exact name(s)" toggle is redundant — hide it there.
@@ -2675,7 +2951,7 @@ function renderResults() {
   // For gematria mode: each name's value (as typed, finals preserved), used to
   // mark equal words/phrases and to label the pills.
   const gematriaSpecs = state.searchMode === "gematria"
-    ? filled.map(n => ({ name: n, value: gematriaOf((n.match(/[א-ת]/g) || []).join(""), state.gematriaGadol) }))
+    ? filled.map(n => ({ name: n, value: gematriaValue((n.match(/[א-ת]/g) || []).join(""), state.gematriaMethod) }))
         .filter(s => s.value > 0)
     : [];
   const items = state.results.map(r => {
@@ -2691,12 +2967,12 @@ function renderResults() {
     let gemCaption = "";
     let hebHtml;
     if (r.gematria) {
-      const g = highlightGematria(cleanedHebrew, gematriaSpecs.map(s => s.value), r.gematriaGadol, r.l);
+      const g = highlightGematria(cleanedHebrew, gematriaSpecs.map(s => s.value), state.gematriaMethod, r.l, state.gematriaKollel);
       hebHtml = g.html;
       // Caption: spell out each highlighted word/phrase, its value, its English
       // meaning, and (when more than one name was entered) which name it equals.
       const items = g.matches.map(m => {
-        const namesForVal = gematriaSpecs.filter(s => s.value === m.value).map(s => s.name);
+        const namesForVal = gematriaSpecs.filter(s => state.gematriaKollel ? Math.abs(s.value - m.value) <= 1 : s.value === m.value).map(s => s.name);
         const nm = (gematriaSpecs.length > 1 && namesForVal.length)
           ? ` <span class="gm-name">→ ${escapeHtml(namesForVal.join(", "))}</span>` : "";
         const gl = m.gloss ? ` <span class="gm-gloss">“${escapeHtml(m.gloss)}”</span>` : "";
@@ -2705,7 +2981,7 @@ function renderResults() {
       if (items) gemCaption = `<div class="gem-matches">${items}</div>`;
     } else {
       hebHtml = r.rashei
-        ? highlightAcrostic(cleanedHebrew, rasheiTargets)   // mark the acrostic run
+        ? highlightAcrostic(cleanedHebrew, rasheiTargets, r.anagramRuns || [])   // acrostic run(s) and/or anagram run(s)
         : r.nameVerse
           ? highlightEdges(cleanedHebrew)                   // mark first & last letter
           : r.simple
@@ -2730,11 +3006,16 @@ function renderResults() {
           + (r.multi ? ` · ${r.wholeNames.join(", ")}` : "");
       } else if (r.allMatched && r.multi) badgeText = "All names present";
     } else if (r.rashei) {
-      badgeText = r.status === "forward" ? "Name in order"
-        : r.status === "reverse" ? "Name in reverse order"
-        : r.status === "other" ? "All names present"
-        : r.allMatched ? "All names present"
-        : r.multi ? "One Name in Order" : "";
+      if (r.acrostic) {
+        badgeText = r.status === "forward" ? "Name in order"
+          : r.status === "reverse" ? "Name in reverse order"
+          : r.status === "other" ? "All names present"
+          : r.allMatched ? "All names present"
+          : r.multi ? "One name in order" : "";
+        if (r.anagram) badgeText = badgeText ? (badgeText + " · anagram") : "Anagram";
+      } else if (r.anagram) {
+        badgeText = "Anagram";
+      }
     } else if (r.allMatched && r.multi) {
       badgeText = "All names present";
     }
@@ -2937,6 +3218,15 @@ function setSearchingState(on) {
   }
 }
 
+// The active theme as a list of Hebrew roots: a typed keyword (its roots) takes
+// precedence over the preset dropdown; null when no theme is set.
+function activeThemeRoots() {
+  const kw = (state.themeKeyword || "").trim();
+  if (kw) { const r = getRoots(kw); return r && r.length ? r : null; }
+  if (state.theme && THEMES[state.theme]) return THEMES[state.theme];
+  return null;
+}
+
 function performSearch() {
   let filled = state.names.map(s => s.trim()).filter(Boolean);
   if (!filled.length) {
@@ -2957,8 +3247,10 @@ function performSearch() {
   setTimeout(() => {
     try {
       const scope = {
-        filterTorahOnly: state.filterTorahOnly,
-        filterPsalmsOnly: state.filterPsalmsOnly,
+        scope: state.scope,
+        shortOnly: state.shortOnly,
+        hideGenealogy: state.hideGenealogy,
+        theme: activeThemeRoots(),
         filterExactReveal: state.filterExactReveal,
       };
       state.results = state.searchMode === "simple"
@@ -2966,9 +3258,18 @@ function performSearch() {
         : state.searchMode === "nameverse"
           ? doNameVerseSearch(filled, scope)
           : state.searchMode === "rashei"
-            ? doRosheiTeivotSearch(filled, scope)
+            ? doRosheiTeivotSearch(filled, {
+                ...scope,
+                anagramsOnly: state.anagramsOnly,
+                acrosticsOnly: state.acrosticsOnly,
+                acrosticDir: state.acrosticDir,
+              })
             : state.searchMode === "gematria"
-              ? doGematriaSearch(filled, { ...scope, gematriaGadol: state.gematriaGadol })
+              ? doGematriaSearch(filled, {
+                  ...scope,
+                  gematriaMethod: state.gematriaMethod,
+                  gematriaKollel: state.gematriaKollel,
+                })
               : doSearch(filled, {
                   ...scope,
                   filterExact: state.filterExact,
@@ -3111,40 +3412,54 @@ kbToggle.addEventListener("click", () => {
   renderKeyboard();
 });
 
-filterPsalmsBtn.addEventListener("click", () => {
-  state.filterPsalmsOnly = !state.filterPsalmsOnly;
-  renderToggle(filterPsalmsBtn, state.filterPsalmsOnly);
-  if (state.results !== null) performSearch();
+// Re-run the search if results are already showing (so filter changes apply live).
+const reSearch = () => { if (state.results !== null) performSearch(); };
+// A boolean toggle: flips state[key], reflects it on the button, re-searches.
+function wireToggle(btn, key) {
+  btn.addEventListener("click", () => {
+    state[key] = !state[key];
+    renderToggle(btn, state[key]);
+    reSearch();
+  });
+}
+
+wireToggle(filterExactBtn, "filterExact");
+wireToggle(filterExactRevealBtn, "filterExactReveal");
+wireToggle(filterStrictBtn, "filterStrict");
+wireToggle(filterShortBtn, "shortOnly");
+wireToggle(filterGenealogyBtn, "hideGenealogy");
+wireToggle(filterKollelBtn, "gematriaKollel");
+
+// Scope / theme / method / direction selectors.
+scopeSelect.addEventListener("change", () => { state.scope = scopeSelect.value; reSearch(); });
+themeSelect.addEventListener("change", () => { state.theme = themeSelect.value; reSearch(); });
+gematriaMethodSel.addEventListener("change", () => { state.gematriaMethod = gematriaMethodSel.value; reSearch(); });
+acrosticDirSel.addEventListener("change", () => { state.acrosticDir = acrosticDirSel.value; reSearch(); });
+themeKeywordInput.addEventListener("input", () => { state.themeKeyword = themeKeywordInput.value; });
+themeKeywordInput.addEventListener("change", () => { state.themeKeyword = themeKeywordInput.value; reSearch(); });
+themeKeywordInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); state.themeKeyword = themeKeywordInput.value; reSearch(); }
 });
 
-filterGadolBtn.addEventListener("click", () => {
-  state.gematriaGadol = !state.gematriaGadol;
-  renderToggle(filterGadolBtn, state.gematriaGadol);
-  if (state.results !== null) performSearch();
+// Anagrams-only / acrostics-only are mutually exclusive.
+filterAnagramsOnlyBtn.addEventListener("click", () => {
+  state.anagramsOnly = !state.anagramsOnly;
+  if (state.anagramsOnly) { state.acrosticsOnly = false; renderToggle(filterAcrosticsOnlyBtn, false); }
+  renderToggle(filterAnagramsOnlyBtn, state.anagramsOnly);
+  reSearch();
+});
+filterAcrosticsOnlyBtn.addEventListener("click", () => {
+  state.acrosticsOnly = !state.acrosticsOnly;
+  if (state.acrosticsOnly) { state.anagramsOnly = false; renderToggle(filterAnagramsOnlyBtn, false); }
+  renderToggle(filterAcrosticsOnlyBtn, state.acrosticsOnly);
+  reSearch();
 });
 
-filterExactBtn.addEventListener("click", () => {
-  state.filterExact = !state.filterExact;
-  renderToggle(filterExactBtn, state.filterExact);
-  if (state.results !== null) performSearch();
-});
-
-filterExactRevealBtn.addEventListener("click", () => {
-  state.filterExactReveal = !state.filterExactReveal;
-  renderToggle(filterExactRevealBtn, state.filterExactReveal);
-  if (state.results !== null) performSearch();
-});
-
-filterStrictBtn.addEventListener("click", () => {
-  state.filterStrict = !state.filterStrict;
-  renderToggle(filterStrictBtn, state.filterStrict);
-  if (state.results !== null) performSearch();
-});
-
-filterTorahBtn.addEventListener("click", () => {
-  state.filterTorahOnly = !state.filterTorahOnly;
-  renderToggle(filterTorahBtn, state.filterTorahOnly);
-  if (state.results !== null) performSearch();
+// "Filters >>>" reveal/conceal.
+filtersToggle.addEventListener("click", () => {
+  const opening = filtersBody.hidden;
+  filtersBody.hidden = !opening;
+  filtersToggle.classList.toggle("open", opening);
 });
 
 searchBtn.addEventListener("click", performSearch);
