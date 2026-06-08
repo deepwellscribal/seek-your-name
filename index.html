@@ -201,6 +201,34 @@
   header.intro .intro-panel { margin-top: 0.85rem; text-align: left; }
   header.intro .intro-panel[hidden] { display: none; }
   header.intro .intro-panel > *:first-child { margin-top: 0; }
+  /* Hebrew quotation (e.g. the midrash line in WHAT). */
+  header.intro .intro-panel .he-quote {
+    font-family: var(--F-heb);
+    direction: rtl;
+    text-align: right;
+    font-size: 1.18rem;
+    line-height: 1.95;
+    color: var(--ink);
+    margin: 0.2rem 0 0.55rem;
+  }
+  /* Its English rendering, set a touch smaller and quieter. */
+  header.intro .intro-panel .he-gloss {
+    font-size: 0.84rem;
+    color: #6b5232;
+    line-height: 1.7;
+    margin: 0 0 0.95rem;
+  }
+  /* The "5 ways" list in WHAT. */
+  header.intro .intro-panel ol {
+    margin: 0.1rem 0 0.95rem;
+    padding-left: 1.35rem;
+  }
+  header.intro .intro-panel li {
+    font-size: 0.9rem;
+    color: #5a4528;
+    line-height: 1.7;
+    margin-bottom: 0.15rem;
+  }
   .search-wrap {
     width: 100%;
     max-width: 560px;
@@ -986,17 +1014,29 @@
       <button type="button" class="intro-tab" data-panel="who">Who <span class="chev">&gt;&gt;&gt;</span></button>
     </nav>
     <div class="intro-panel" id="panel-what" hidden>
-      <p>With this search tool, you can browse verses from <em>Tanakh</em> (the Jewish scriptural canon) that include your name as is, or go further and find verses that follow the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the <em>roshei teivot</em> (initial letters) of your name, illuminate connections via <em>Gematria</em> (numerology), or go deeper and discover the meaning(s) of your name embedded in the Hebrew <em>shoreshim</em> (word roots) of the text itself.</p>
+      <p>The <em>midrash Breishit Rabbah</em> (<a href="https://www.sefaria.org/Bereshit_Rabbah.14.9?lang=bi&amp;with=all&amp;lang2=en" target="_blank" rel="noopener">14:9</a>) says:</p>
+      <p class="he-quote" lang="he" dir="rtl">חֲמִשָּׁה שֵׁמוֹת נִקְרְאוּ לָהּ: נֶפֶשׁ, רוּחַ, נְשָׁמָה, יְחִידָה, חַיָּה</p>
+      <p class="he-gloss">“[The soul] is called by five names: <em>nefesh</em> (Genesis 2:7), <em>ruaḥ</em> (Ezekiel 37:14), <em>neshama</em> (Genesis 2:7), <em>yeḥida</em> (Psalms 22:21), <em>ḥaya</em> (Psalms 143:3).”</p>
+      <p>Just as the soul has 5 names, this search tool has 5 ways to discover the depths of your name:</p>
+      <ol>
+        <li><em>P’shat</em> — Simple</li>
+        <li><em>Shoresh</em> — Root</li>
+        <li><em>Roshei Teivot</em> — Anagrams &amp; Acrostics</li>
+        <li><em>Rishon v’Acharon</em> — First &amp; Last Letters</li>
+        <li><em>Gematria</em> — Numerology</li>
+      </ol>
+      <p>Browse verses from <em>Tanakh</em> (the Jewish scriptural canon) that include your name as is, go further and find verses that follow the traditional formula (beginning and ending with the first and last letters of your name), reveal verses that have the <em>roshei teivot</em> (initial letters) of your name in different combinations, illuminate connections via <em>Gematria</em> (numerology), or go deeper and discover the meaning(s) of your name embedded in the Hebrew <em>shoreshim</em> (word roots) of the text itself.</p>
+      <p>If you do not have a given Hebrew name, you can use the field beneath the Hebrew keyboard to transliterate your English name into Hebrew characters and then copy/paste to search. However, transliteration is not exact and results may vary.</p>
       <p>If you find a verse for your name that you love and want to commission original artwork based on it — to strengthen this practice and further illuminate this knowledge of self — click the “Illustrate This Verse” button and send a message to the scribe-in-residence at Deep Well.</p>
     </div>
     <div class="intro-panel" id="panel-why" hidden>
       <p>There’s an old custom to recite a verse associated with your name at the end of the <em>Amidah</em> prayer. Some <em>siddurim</em> (prayerbooks) even include a list of verses for people’s names based on first- and last-letter connections.</p>
       <p>This practice is meant to help a person connect more deeply with his or her name. In this life, knowing your name means being in touch with your purpose and striving to fulfill it. This deep knowing, in turn, is said to help the soul pass a major trial in the afterlife: remembering its name.</p>
-      <p><a href="https://www.chabad.org/library/article_cdo/aid/2451435/jewish/Names-Verses-and-Flaming-Hot-Rods.htm" target="_blank" rel="noopener">The <em>Rebbe Rashab</em> taught</a>: “through the letters of the ‘verses of the names,’ one merits that he is allowed to stand near the open doors and see what transpires in the Heavenly chambers.” May this search tool help facilitate such supernal gazing.</p>
+      <p><a href="https://www.chabad.org/library/article_cdo/aid/2451435/jewish/Names-Verses-and-Flaming-Hot-Rods.htm" target="_blank" rel="noopener">The <em>Rebbe Rashab</em> taught</a>: “through the letters of the ‘verses of the names,’ one merits that he is allowed to stand near the open doors and see what transpires in the Heavenly chambers.” May this search tool help facilitate such internal, supernal gazing.</p>
     </div>
     <div class="intro-panel" id="panel-who" hidden>
-      <p>This tool was made by Josh Fleet of Deep Well Scribal with the help of Claude Code and Sefaria. It is in ongoing development. If you notice mistakes or have ideas for improving or expanding the search function, reach out to <a href="mailto:josh@deepwell.studio">josh@deepwell.studio</a>.</p>
-      <p>Josh makes one-of-a-kind Hebrew letter art, including custom ketubot (wedding contracts), brachot (blessings), kavvanot (intentions), and kame’ot (amulets), and he is actively studying the laws of sofrut (the Jewish scribal tradition).</p>
+      <p>This tool was made by Josh Fleet of <a href="https://deepwell.studio/" target="_blank" rel="noopener">Deep Well Scribal</a> with the help of Claude Code and Sefaria. It is in ongoing development. If you notice mistakes or have ideas for improving or expanding the search functions, reach out to <a href="mailto:josh@deepwell.studio">josh@deepwell.studio</a>.</p>
+      <p>Josh makes one-of-a-kind Hebrew letter art, including custom ketubot (wedding contracts), brachot (blessings), kavvanot (intentions), and kame’ot (amulets), and he is actively studying the laws of sofrut (the Jewish scribal tradition). <a href="https://www.deepwell.studio/category/all-products" target="_blank" rel="noopener">Find examples and support his work here</a>.</p>
     </div>
   </div>
 </header>
