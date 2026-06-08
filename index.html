@@ -1881,7 +1881,9 @@ function sameCounts(a, b) {
   for (const k of ka) if (a[k] !== b[k]) return false; return true;
 }
 // Every run of CONSECUTIVE words whose combined letters are an exact anagram of
-// `target` (a {counts, len}). Returns [startWordIndex, wordLength] pairs.
+// `target` (a {word, counts, len}). Returns [startWordIndex, wordLength] pairs.
+// A verbatim occurrence of the name (a single word that IS the name, same order)
+// is NOT an anagram — that's an exact match, which belongs to the Simple search.
 function anagramRuns(words, target) {
   const runs = [];
   for (let i = 0; i < words.length; i++) {
@@ -1890,7 +1892,13 @@ function anagramRuns(words, target) {
       len += words[j].length;
       if (len > target.len) break;
       for (const ch of words[j]) counts[ch] = (counts[ch] || 0) + 1;
-      if (len === target.len) { if (sameCounts(counts, target.counts)) runs.push([i, j - i + 1]); break; }
+      if (len === target.len) {
+        if (sameCounts(counts, target.counts)) {
+          const wordLen = j - i + 1;
+          if (!(wordLen === 1 && words[i] === target.word)) runs.push([i, wordLen]);
+        }
+        break;
+      }
     }
   }
   return runs;
@@ -2205,6 +2213,7 @@ function doRosheiTeivotSearch(names, opts = {}) {
       acrostic: acrosticOK,
       anagram: anagramOK,
       anagramRuns: anagramOK ? anaRuns : [],
+      anagramSingle: anagramOK && anaRuns.some(run => run[1] === 1),  // a true single-word anagram
       isPsalms: verse.b === "Psalms",
       nameBucket: Math.round(nameFrac * 4),
       coverage: matchedNames.length,
@@ -3006,16 +3015,21 @@ function renderResults() {
           + (r.multi ? ` · ${r.wholeNames.join(", ")}` : "");
       } else if (r.allMatched && r.multi) badgeText = "All names present";
     } else if (r.rashei) {
+      // Specific badges per match type; an acrostic + anagram match shows both.
+      const parts = [];
       if (r.acrostic) {
-        badgeText = r.status === "forward" ? "Name in order"
-          : r.status === "reverse" ? "Name in reverse order"
+        parts.push(
+          r.status === "forward" ? (r.multi ? "All names in order" : "Name in order")
+          : r.status === "reverse" ? (r.multi ? "All names in reverse order" : "One name in reverse order")
           : r.status === "other" ? "All names present"
           : r.allMatched ? "All names present"
-          : r.multi ? "One name in order" : "";
-        if (r.anagram) badgeText = badgeText ? (badgeText + " · anagram") : "Anagram";
-      } else if (r.anagram) {
-        badgeText = "Anagram";
+          : r.multi ? "One name in order" : ""
+        );
       }
+      if (r.anagram) {
+        parts.push(r.anagramSingle ? "Single word anagram" : "Word-run anagram");
+      }
+      badgeText = parts.filter(Boolean).join(" · ");
     } else if (r.allMatched && r.multi) {
       badgeText = "All names present";
     }
